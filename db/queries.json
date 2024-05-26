@@ -1,0 +1,50 @@
+{
+  "Entrance": [
+    "Is the entrance clearly marked?",
+    "Is there a ramp for wheelchair access?",
+    "Is the entrance wide enough for a wheelchair to pass through easily?",
+    "Is the entrance free of any obstacles or steps?"
+  ],
+  "Doors": [
+    "Are the doors automatic or easy to open?",
+    "Are the doors wide enough for wheelchair access?",
+    "Are the door handles easy to grasp and use?",
+    "Do the doors have a clear glass panel for visibility?"
+  ],
+  "Aisles": [
+    "Are the aisles wide enough for a wheelchair to pass through comfortably?",
+    "Are the aisles free of obstacles and clutter?",
+    "Are the floor surfaces smooth and non-slip?",
+    "Is there adequate lighting in the aisles?"
+  ],
+  "Counters": [
+    "Are the counters at a height accessible for people in wheelchairs?",
+    "Are there lowered sections of the counters for better accessibility?",
+    "Is there enough space in front of the counters for wheelchair maneuvering?",
+    "Are the payment terminals reachable from a seated position?"
+  ],
+  "Restrooms": [
+    "Are there accessible restrooms available?",
+    "Is there enough space for wheelchair maneuvering inside the restrooms?",
+    "Are the restroom fixtures (sink, toilet) at an accessible height?",
+    "Are there grab bars installed in the restrooms?"
+  ],
+  "Parking": [
+    "Are there designated accessible parking spaces available?",
+    "Are the accessible parking spaces close to the entrance?",
+    "Are the parking spaces wide enough for wheelchair access?",
+    "Is the path from the parking area to the entrance smooth and obstacle-free?"
+  ],
+  "Elevators": [
+    "Are elevators available for access to different floors?",
+    "Are the elevator buttons at an accessible height?",
+    "Is there audible and visual indication of floors in the elevator?",
+    "Is the elevator large enough to accommodate a wheelchair?"
+  ],
+  "Shelves": [
+    "Are items on shelves reachable from a seated position?",
+    "Are there step stools or assistance available for higher shelves?",
+    "Are the labels on the shelves easy to read?",
+    "Is there enough space between shelves for easy navigation?"
+  ]
+}
