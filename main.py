@@ -1,22 +1,6 @@
-import os
+import user_panel
 
-from users import User, Users
-from chat_api import ask_openai_with_image
-from utils import convert_images_in_directory_to_base64 as photos_to_base64
-
-
-def door_photos(user):
-    door_photos_path = f'/db/{user.username}'
-    # Validate the path
-    if os.path.exists(door_photos_path) and os.path.isdir(door_photos_path):
-        print(f"Door photos have been provided. Proceeding...")
-        query = ''
-        door_base64_photos = photos_to_base64(door_photos_path)
-        result = ask_openai_with_image(query, door_base64_photos)
-        user.add_place('door', door_base64_photos, result)
-        return result
-    else:
-        print(f"{user} has not provided any door photos yet.")
+from users import Users
 
 
 def main():
@@ -25,16 +9,38 @@ def main():
 
     print("Welcome to Accessible-Look!")
 
-    print("Please log in:")
     while True:
-        username = input("username: ")
-        password = input("password: ")
-        user = users.login(username, password)
-        if user:
-            break
+        print("\nMain Menu:")
+        print("1. Sign-Up")
+        print("2. Login")
+        print("3. Enter as a guest")
 
-    response = door_photos(user)
-    print(response)
+        action = input("Choose your option: ")
+
+        if action == '1':
+            print("\nSign-up to the system:")
+            username = input("Username: ")
+            password = input("Password: ")
+            user = users.add_new_user(username, password)
+            if user:
+                break
+
+        elif action == '2':
+            print("\nPlease log in:")
+            username = input("Username: ")
+            password = input("Password: ")
+            user = users.login(username, password)
+            if user:
+                break
+
+        elif action == 3:
+            # View all businesses
+            pass
+
+        else:
+            print("Invalid action, try again. \n")
+
+    user.display_panel()
 
 
 if __name__ == "__main__":

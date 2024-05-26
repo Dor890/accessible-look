@@ -3,6 +3,7 @@ import io
 import base64
 
 from PIL import Image
+from io import BytesIO
 
 
 def image_to_base64(image_path):
@@ -22,3 +23,10 @@ def convert_images_in_directory_to_base64(directory_path):
             img_base64 = image_to_base64(file_path)
             base64_list.append(img_base64)
     return base64_list
+
+
+def display_images_from_base64(images_base64):
+    for img_base64 in images_base64:
+        img_data = base64.b64decode(img_base64)
+        img = Image.open(BytesIO(img_data))
+        img.show()
