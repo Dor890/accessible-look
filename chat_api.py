@@ -1,56 +1,43 @@
-import os
-import json
 import base64
 
 from openai import OpenAI
 
 CHAT_ROLE = 'You are an assistant that should validate if places are accessible.'
-API_KEY = ''
+
+client = OpenAI()
+IMAGE_PATH1 = "db/our_class/door_1/1.jpg"
+IMAGE_PATH2 = "db/our_class/door_1/2.jpg"
+IMAGE_PATH3 = "db/our_class/door_1/3.jpg"
+IMAGE_PATH4 = "db/our_class/door_1/4.jpg"
 
 
-client = OpenAI(api_key=API_KEY,)
+# Open the image file and encode it as a base64 string
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
-def convert_image_to_base64(image_path):
-    with open(image_path, 'rb') as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
-
-
-def ask_openai_with_image(query, image_path):
-    image_base64 = convert_image_to_base64(image_path)
-
-    prompt = f"{query}\n\nImage (base64-encoded): {image_base64}"
-
-    completion = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[
-            {
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt,
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": image_path,
-                        },
-                    }
-                ],
+response = client.chat.completions.create(
+    model='gpt-4o',
+    messages=[
+        {"role": "system", "content": CHAT_ROLE},
+        {"role": "user", "content": [
+            {"type": "text", "text": "Can you tell me what is the size of the door (at least an estimation),"
+                                     " and if the entry for this business is accessible?"},
+            {"type": "image_url", "image_url": {
+                "url": f"data:image/png;base64,{encode_image(IMAGE_PATH1)}"}
+            },
+            {"type": "image_url", "image_url": {
+                "url": f"data:image/png;base64,{encode_image(IMAGE_PATH2)}"}
+            },
+            {"type": "image_url", "image_url": {
+                "url": f"data:image/png;base64,{encode_image(IMAGE_PATH3)}"}
+            },
+            {"type": "image_url", "image_url": {
+                "url": f"data:image/png;base64,{encode_image(IMAGE_PATH4)}"}
             }
-        ],
-        max_tokens=300,
-    )
-    print(completion.choices[0].text)
-    print(dict(completion).get('usage'))
-    print(completion.model_dump_json(indent=2))
-    return completion.choices[0].message['content']
-
-
-door_query = "Can you tell me what is the size of the door, and if the entry for this business is accessible?"
-image_path = "./db/our_class/door_1/1.jpg"
-
-response = ask_openai_with_image(door_query, image_path)
-print(response)
-
+        ]}
+    ],
+    temperature=0.0,
+)
+print(response.choices[0].message.content)
