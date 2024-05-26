@@ -34,5 +34,6 @@ if __name__ == '__main__':
     images = [encode_image(image_path1), encode_image(image_path2),
               encode_image(image_path3), encode_image(image_path4)]
     query = ("Can you tell me what is the size of the door (at least an estimation), "
-             "and if the entry for this business is accessible?")
+             "and if the entry for this business is accessible? Please give a short estimation at first if the business"
+             " is accessible, and afterwards add a detailed explanation")
     print(ask_chat_gpt_with_images(query, images))
