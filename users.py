@@ -1,6 +1,7 @@
 import pickle
 
 from user_panel import User
+from models import User, db
 
 USERS_DB = 'db/users.pkl'
 
@@ -17,13 +18,15 @@ class Users:
         print(f"User {username} has been created successfully!")
         self.save_users()
 
-    def login(self, username, password):
-        user = self.users_dict.get(username)
-        if user and user.validate_password(password):
-            print("Credentials were validated. Proceeding...")
-            return user
-        print("Credentials are wrong.")
-        return False
+    def register(self, username, email, password):
+        user = User(username=username, email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+    def login(self, email, password):
+        user = User.query.filter_by(email=email, password=password).first()
+        return user
 
     def load_users(self):
         try:

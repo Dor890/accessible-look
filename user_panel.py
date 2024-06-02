@@ -3,7 +3,7 @@ import query_manager
 
 from utils import display_images_from_base64
 
-QUERIES_JSON = '/db/queries.json'
+QUERIES_JSON = 'db/queries.json'
 
 with open(QUERIES_JSON, 'r') as file:
     queries_dict = json.load(file)

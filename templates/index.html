@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="landing-page">
+    <h2>Welcome to the Accessibility Checker</h2>
+    <button onclick="window.location.href='{{ url_for('register') }}'">Register</button>
+    <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+    <button onclick="window.location.href='{{ url_for('guest') }}'">Enter as Guest</button>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="guest-page">
+    <h2>Businesses</h2>
+    {% for business in businesses %}
+    <div class="business">
+        <h3>{{ business.name }}</h3>
+        <!-- Display photos and results -->
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
