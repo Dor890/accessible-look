@@ -26,7 +26,7 @@ def main():
                 break
 
         elif action == '2':
-            print("\nPlease log in:")
+            print("\nPlease log-in:")
             username = input("Username: ")
             password = input("Password: ")
             user = users.login(username, password)
@@ -34,13 +34,13 @@ def main():
                 break
 
         elif action == 3:
-            # View all businesses
+            # View all businesses as a guest
             pass
 
         else:
             print("Invalid action, try again. \n")
 
-    user.display_panel()
+    user.action_center()
 
 
 if __name__ == "__main__":
