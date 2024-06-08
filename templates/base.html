@@ -1,28 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <title>Accessibility Checker</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>בודק הנגישות</title>
+    <style>
+        body {
+            direction: rtl;
+            text-align: right;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            color: #333;
+            margin: 20px 0;
+        }
+        .logo img {
+            width: 80px;
+            height: 80px;
+            margin-left: 10px;
+        }
+        .navbar-nav {
+            flex-direction: row-reverse;
+        }
+        .navbar-nav .nav-item {
+            margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Accessibility Checker</h1>
-        <nav>
-            <a href="{{ url_for('index') }}">Home</a>
-            {% if 'user' in session %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            {% else %}
-            <a href="{{ url_for('login') }}">Login</a>
-            <a href="{{ url_for('register') }}">Register</a>
-            {% endif %}
-            <a href="{{ url_for('guest') }}">Guest</a>
-        </nav>
+    <header class="mb-4">
+        <div class="container">
+            <div class="logo">
+                <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="לוגו בודק הנגישות">
+                </a>
+            </div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand" href="{{ url_for('index') }}">בית</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="נווט">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        {% if 'user' in session %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('dashboard') }}">ניהול המשתמש</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('logout') }}">התנתק</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('login') }}">התחברות</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('register') }}">הרשמה</a>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('guest') }}">צפייה בעסקים קיימים</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
     </header>
-    <main>
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
+

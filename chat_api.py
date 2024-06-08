@@ -26,14 +26,18 @@ def ask_chat_gpt_with_images(query, images):
     return response.choices[0].message.content
 
 
-if __name__ == '__main__':
-    image_path1 = "db/our_class/door_1/1.jpg"
-    image_path2 = "db/our_class/door_1/2.jpg"
-    image_path3 = "db/our_class/door_1/3.jpg"
-    image_path4 = "db/our_class/door_1/4.jpg"
-    images = [encode_image(image_path1), encode_image(image_path2),
-              encode_image(image_path3), encode_image(image_path4)]
-    query = ("Can you tell me what is the size of the door (at least an estimation), "
-             "and if the entry for this business is accessible? Please give a short estimation at first if the business"
-             " is accessible, and afterwards add a detailed explanation")
-    print(ask_chat_gpt_with_images(query, images))
+def ask_chat_gpt_final_result(combined_results):
+    pass
+
+
+# if __name__ == '__main__':
+#     image_path1 = "db/our_class/door_1/1.jpg"
+#     image_path2 = "db/our_class/door_1/2.jpg"
+#     image_path3 = "db/our_class/door_1/3.jpg"
+#     image_path4 = "db/our_class/door_1/4.jpg"
+#     images = [encode_image(image_path1), encode_image(image_path2),
+#               encode_image(image_path3), encode_image(image_path4)]
+#     query = ("Can you tell me what is the size of the door (at least an estimation), "
+#              "and if the entry for this business is accessible? Please give a short estimation at first if the business"
+#              " is accessible, and afterwards add a detailed explanation")
+#     print(ask_chat_gpt_with_images(query, images))

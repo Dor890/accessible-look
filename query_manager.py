@@ -1,30 +1,45 @@
 import os
 import json
 
-from chat_api import ask_chat_gpt_with_images
-from utils import convert_images_in_directory_to_base64 as photos_to_base64
+from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result
+
+QUERIES_PATH = os.path.join('static', 'queries.json')
+
+with open(QUERIES_PATH, 'r', encoding='utf-8') as file:
+    queries_dict = json.load(file)
 
 
-def query_place(user, place,  query):
-    images_path = f'/db/{user.username}/{place}'
+def query_place(user, place):
+    # Get the list of queries for the given place from queries_dict
+    queries = queries_dict.get(place)
 
-    # Receive Images
-    images = receive_images(images_path)
+    if queries is None:
+        print(f"No queries found for place: {place}")
+        return [], "No queries found"
+
+    # Import Image here to avoid circular import
+    from models import Image
+
+    # Get images uploaded by the user for the place from the database
+    images = Image.query.filter_by(user_id=user.id, place=place).all()
 
     # Convert images to Base64
-    base64_photos = photos_to_base64(images)
+    base64_images = [image.data for image in images]
 
-    # Get ChatGPT results
-    result = ask_chat_gpt_with_images(query, base64_photos)
+    # Get ChatGPT results for each query
+    results = {}
+    for query in queries:
+        result = ask_chat_gpt_with_images(query, base64_images)
+        results[query] = result
 
-    return base64_photos, result
+    return base64_images, results
 
 
-def receive_images(images_path):
-    # TODO: Make user upload photos
-    if os.path.exists(images_path) and os.path.isdir(images_path):
-        print(f"Photos have been provided. Proceeding...")
-        return True
-    else:
-        print(f"You haven't provided any photos for this place yet.")  # Or invalid
-        return False
+def query_final_result(results):
+    # Combine all results into a single data structure
+    combined_results = "; ".join([f"{place}: {result}" for place, result in results.items()])
+
+    # Send the combined results to the ask_chat_gpt_final_result function
+    final_result = ask_chat_gpt_final_result(combined_results)
+
+    return final_result

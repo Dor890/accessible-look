@@ -2,11 +2,20 @@
 
 {% block content %}
 <div class="guest-page">
-    <h2>Businesses</h2>
-    {% for business in businesses %}
+    <h2>רשימת העסקים הנגישים</h2>
+    {% for user in users %}
     <div class="business">
-        <h3>{{ business.name }}</h3>
-        <!-- Display photos and results -->
+        <h3>{{ user.username }}</h3>
+        {% for place, data in user.places.items() %}
+            <h4>{{ place }}</h4>
+            <div class="place-images">
+                {% for image in data.images %}
+                    <img src="data:image/jpeg;base64,{{ image }}" alt="Image">
+                {% endfor %}
+                <p>Condition: {{ data.response }}</p>
+            </div>
+        {% endfor %}
+        <p>Final Result: {{ user.final_result }}</p>
     </div>
     {% endfor %}
 </div>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>פאנל מנהל</h1>
+<table>
+    <thead>
+        <tr>
+            <th>שם משתמש</th>
+            <th>מקומות</th>
+            <th>תוצאה סופית</th>
+            <th>פעולות</th> <!-- Add a new column for actions -->
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>
+                {% for place, data in user.places.items() %}
+                    <div>
+                        <strong>{{ place }}</strong>
+                        <div class="place-images">
+                            {% for image in data['images'] %}
+                                <img src="data:image/jpeg;base64,{{ image }}" alt="תמונה">
+                            {% endfor %}
+                            <p>מצב: {{ data['response'] }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </td>
+            <td>{{ user.final_result }}</td>
+            <td> <!-- Add a delete button for each user -->
+                <form action="{{ url_for('delete_user', username=user.username) }}" method="POST">
+                    <button type="submit" class="btn btn-danger">מחק משתמש</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

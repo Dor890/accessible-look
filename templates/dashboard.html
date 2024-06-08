@@ -1,22 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="dashboard">
-    <h2>Accessibility Check Dashboard</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <div class="stage">
-            <label for="stage">Stage:</label>
-            <select name="stage" id="stage">
-                <option value="Entrance">Entrance</option>
-                <option value="Restrooms">Restrooms</option>
-                <!-- Add more stages as needed -->
-            </select>
-        </div>
-        <div class="upload">
-            <label for="photos">Upload Photos:</label>
-            <input type="file" name="photos" id="photos" multiple>
-        </div>
-        <button type="submit">Upload</button>
-    </form>
+<h1>מסך ניהול המידע</h1>
+<div>
+    <p>שלום, {{ user.username }}</p>
+    <p>העלה עבור כל אזור בין 3-5 תמונות, וצלמם אותו מכמה זוויות שונות</p>
+</div>
+<div class="user-places">
+    <ul>
+        {% for place in supported_places %}
+            <li>
+                {% if place in user.places %}
+                    <span style="color: green;">✔</span>
+                    <span>{{ place }}</span>
+                    <button onclick="document.getElementById('view-{{ place }}').style.display='block'">View</button>
+                    <div id="view-{{ place }}" style="display: none;">
+                        <h3>{{ place }}</h3>
+                        <div class="place-images">
+                            {% for image in user.places[place]['images'] %}
+                                <img src="data:image/jpeg;base64,{{ image }}" alt="Image">
+                            {% endfor %}
+                            <p>Condition: {{ user.places[place]['response'] }}</p>
+                        </div>
+                    </div>
+                {% else %}
+                    <span style="color: red;">✘</span>
+                    <span>{{ place }}</span>
+                    <button onclick="document.getElementById('upload-{{ place }}').style.display='block'">בחר אזור זה</button>
+                    <div id="upload-{{ place }}" style="display: none;">
+                        <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="place" value="{{ place }}">
+                            <input type="file" name="photos" id="photos-{{ place }}" multiple required>
+                            <button type="submit">העלה</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% if user.final_result %}
+    <div>
+        <h2>ביקורת נגישות סופית לעסק:</h2>
+        <p>{{ user.final_result }}</p>
+    </div>
+    {% endif %}
+    {% if can_create_review %}
+    <ul>
+        <form action="{{ url_for('create_review') }}" method="POST">
+            <button type="submit">צור ביקורת סופית</button>
+        </form>
+    </ul>
+    {% endif %}
 </div>
 {% endblock %}
