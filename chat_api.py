@@ -42,7 +42,7 @@ def ask_chat_gpt_final_result(combined_results):
     model = 'gpt-4o'
     system_config = {"role": "system", "content": CHAT_ROLE}
     user_config = {"role": "user", "content": []}
-    query = (f"Generate a detailed accessibility report for user according to the following results: {combined_results}. "
+    query = (f"Generate a detailed accessibility report for user according to the following results: {combined_results}.\n\n "
              f"In case you have recommendations to steps that need to be made in order to make the place more"
              f"accessible, write them as well. Write the report in Hebrew. Each title should be written with "
              f"### at the beginning, and each sub-title should be written with - ** before the sub-title "
