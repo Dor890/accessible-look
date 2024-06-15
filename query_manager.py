@@ -1,7 +1,7 @@
 import os
 import json
 
-from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result
+from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result, encode_image
 
 QUERIES_PATH = os.path.join('static', 'queries.json')
 
@@ -24,7 +24,7 @@ def query_place(user, place):
     images = Image.query.filter_by(user_id=user.id, place=place).all()
 
     # Convert images to Base64
-    base64_images = [image.data for image in images]
+    base64_images = [encode_image(image.filepath) for image in images]
 
     # Get ChatGPT results for each query
     results = {}

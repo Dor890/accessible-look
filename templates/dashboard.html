@@ -4,29 +4,29 @@
 <h1>מסך ניהול המידע</h1>
 <div>
     <p>שלום, {{ user.username }}</p>
-    <p>העלה עבור כל אזור בין 3-5 תמונות, וצלמם אותו מכמה זוויות שונות</p>
+    <p>העלה עבור כל אזור בין 3-5 תמונות, וצלם אותו מכמה זוויות שונות</p>
 </div>
 <div class="user-places">
     <ul>
         {% for place in supported_places %}
             <li>
                 {% if place in user.places %}
-                    <span style="color: green;">✔</span>
+                    <span style="color: blue;">✔</span>
                     <span>{{ place }}</span>
-                    <button onclick="document.getElementById('view-{{ place }}').style.display='block'">View</button>
+                    <button onclick="toggleView('{{ place }}')">View</button>
                     <div id="view-{{ place }}" style="display: none;">
                         <h3>{{ place }}</h3>
                         <div class="place-images">
                             {% for image in user.places[place]['images'] %}
-                                <img src="data:image/jpeg;base64,{{ image }}" alt="Image">
+                                <img src="data:image/jpeg;base64,{{ image }}" alt="Image" style="width: 600px; height: 600px;">
                             {% endfor %}
-                            <p>Condition: {{ user.places[place]['response'] }}</p>
+                            <p>Condition: {{ user.places[place]['summary'] }}</p>
                         </div>
                     </div>
                 {% else %}
                     <span style="color: red;">✘</span>
                     <span>{{ place }}</span>
-                    <button onclick="document.getElementById('upload-{{ place }}').style.display='block'">בחר אזור זה</button>
+                    <button onclick="toggleView('upload-{{ place }}')">בחר אזור זה</button>
                     <div id="upload-{{ place }}" style="display: none;">
                         <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="place" value="{{ place }}">
@@ -39,17 +39,28 @@
         {% endfor %}
     </ul>
     {% if user.final_result %}
-    <div>
-        <h2>ביקורת נגישות סופית לעסק:</h2>
-        <p>{{ user.final_result }}</p>
-    </div>
-    {% endif %}
-    {% if can_create_review %}
-    <ul>
-        <form action="{{ url_for('create_review') }}" method="POST">
-            <button type="submit">צור ביקורת סופית</button>
-        </form>
-    </ul>
+        <div>
+            <a href="{{ url_for('download_report') }}" class="btn btn-primary">הורד דוח PDF</a>
+        </div>
+    {% elif can_create_review %}
+        <ul>
+            <form action="{{ url_for('create_review') }}" method="POST">
+                <button type="submit">צור ביקורת סופית</button>
+            </form>
+        </ul>
     {% endif %}
 </div>
+<script>
+// JavaScript function to toggle the visibility of the div
+function toggleView(divId) {
+    // Get the div element by ID
+    var divElement = document.getElementById('view-' + divId) || document.getElementById(divId);
+    // Toggle the display property
+    if (divElement.style.display === 'none' || divElement.style.display === '') {
+        divElement.style.display = 'block';
+    } else {
+        divElement.style.display = 'none';
+    }
+}
+</script>
 {% endblock %}

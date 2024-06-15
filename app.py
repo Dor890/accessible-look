@@ -1,4 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+import base64
+import os
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
+from werkzeug.utils import secure_filename
+
 from config import Config
 from models import db, migrate, User, Image, supported_places
 
@@ -66,7 +71,8 @@ def dashboard():
         return redirect(url_for('login'))
 
     user = User.query.get(session['user'])
-    can_create_review = user.can_create_review()  # Check if user can create a review
+    can_create_review = user.can_create_review()
+    # Check if user can create a review
 
     if request.method == 'POST':
         place = request.form['place']
@@ -76,25 +82,29 @@ def dashboard():
             flash('You must upload 3-5 photos for each place.', 'error')
             return redirect(url_for('dashboard'))
 
+        # Directory where images will be saved
+        save_directory = os.path.join('saved_photos', str(user.id), place)
+        os.makedirs(save_directory, exist_ok=True)
+
         for photo in photos:
-            # Read image data
-            image_stream = photo.read()
+            # Secure the filename
+            filename = secure_filename(photo.filename)
 
-            # Create PIL image
-            pil_image = PILImage.open(BytesIO(image_stream))
+            # Define the path to save the file
+            file_path = os.path.join(save_directory, filename)
 
-            # Resize if needed and convert to JPEG format
-            pil_image = pil_image.resize((600, 600))  # Resize if needed
-            buffered = BytesIO()
-            pil_image.save(buffered, format="JPEG")
-            image_data = buffered.getvalue()
+            # Save the file to the specified directory
+            photo.save(file_path)
 
             # Save image to the database
-            new_image = Image(data=image_data, filename=photo.filename, user_id=user.id, place=place)
+            new_image = Image(filepath=file_path, user_id=user.id, place=place)
             db.session.add(new_image)
 
         # Query the place and update user data
         user.query_and_update_place(place)
+
+        # Commit changes to the database
+        db.session.commit()
 
     return render_template('dashboard.html', user=user, supported_places=supported_places,
                            can_create_review=can_create_review)
@@ -119,6 +129,24 @@ def create_review():
         return redirect(url_for('dashboard'))
 
 
+@app.route('/download_report')
+def download_report():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user'])
+    if not user.final_result:
+        flash('Report not available. Please ensure all places have been reviewed.', 'error')
+        return redirect(url_for('dashboard'))
+
+    try:
+        return send_file(user.pdf_report_path, as_attachment=True, download_name='Accessibility_Report.pdf')
+    except FileNotFoundError:
+        flash('Report file not found. Please try again later.', 'error')
+        return redirect(url_for('dashboard'))
+
+
+
 @app.route('/guest')
 def guest():
     users = User.query.all()
@@ -140,13 +168,13 @@ def delete_user(username):
     return redirect(url_for('admin'))
 
 
-# @app.route('/add_test_user')
-# def add_test_user():
-#     user = User(username='testuser@gmail.com', password='password')
-#     db.session.add(user)
-#     db.session.commit()  # Commit changes to the database session
-#     print("Test user added successfully.")
-#     return redirect(url_for('login'))  # Redirect to another route or return a response
+@app.route('/add_test_user')
+def add_test_user():
+    user = User(username='testuser@gmail.com', password='password')
+    db.session.add(user)
+    db.session.commit()  # Commit changes to the database session
+    print("Test user added successfully.")
+    return redirect(url_for('login'))  # Redirect to another route or return a response
 
 
 if __name__ == '__main__':

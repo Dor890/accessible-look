@@ -3,14 +3,16 @@
     "Is the entrance clearly marked?",
     "Is there a ramp for wheelchair access?",
     "Is the entrance wide enough for a wheelchair to pass through easily?",
-    "Is the entrance free of any obstacles or steps?"
+    "Is the entrance free of any obstacles or steps?",
+    "Summarize all your answers to the previous questions (Is the entrance clearly marked?, Is there a ramp for wheelchair access?, Is the entrance wide enough for a wheelchair to pass through easily?, Is the entrance free of any obstacles or steps?) and translate the summary to hebrew (show only the translation)"
   ],
 
   "דלת הכניסה": [
     "Are the doors automatic or easy to open?",
     "Are the doors wide enough for wheelchair access?",
     "Are the door handles easy to grasp and use?",
-    "Do the doors have a clear glass panel for visibility?"
+    "Do the doors have a clear glass panel for visibility?",
+    "Summarize all your answers to the previous questions (Are the doors automatic or easy to open?, Are the doors wide enough for wheelchair access?, Are the door handles easy to grasp and use?, Do the doors have a clear glass panel for visibility?) and translate the summary to hebrew (show only the translation)"
   ],
 
   "מעברים": [
