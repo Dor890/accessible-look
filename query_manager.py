@@ -1,7 +1,6 @@
 from utils import get_queries_dict
-from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result, encode_image
-
-
+from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result
+from utils import encode_image
 
 
 def query_place(user, place):

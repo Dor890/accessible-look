@@ -24,66 +24,81 @@ def index():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     error_message = None
+    message = None
 
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         name = request.form.get('name')
+        address = request.form.get('address')
 
         # Validate required fields
-        if not username or not password:
-            error_message = "שם המשתמש והסיסמה הם שדות חובה. אנא מלא אותם."
+        if not is_valid_email(username):
+            error_message = "שם המשתמש חייב להיות בפורמט של כתובת דואר אלקטרוני תקפה."
+        elif len(name) < 3:
+            error_message = "שם העסק חייב להכיל לפחות 3 תווים."
+        elif len(password) < 6:
+            error_message = "הסיסמה חייבת להכיל לפחות 6 תווים."
         else:
             # Handle file upload
             if 'main_image' in request.files:
                 main_image = request.files['main_image']
-                if main_image.filename == '':
-                    error_message = "יש להעלות תמונה ראשית."
-                else:
-                    # Validate image file type (optional)
-                    if not main_image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
-                        error_message = "יש להעלות קובץ תמונה בפורמט PNG, JPG, JPEG או GIF."
+                # Validate image file type (optional)
+                if not main_image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                    error_message = "יש להעלות קובץ תמונה בפורמט PNG, JPG, JPEG או GIF."
 
-                    # Limit image size and resize if necessary
-                    try:
-                        max_image_size = (500, 500)  # Max width and height
-                        image = PillowImage.open(main_image)
-                        image.thumbnail(max_image_size, PillowImage.ANTIALIAS)
-                        # Save resized image to a secure location
-                        filename = secure_filename(main_image.filename)
-                        upload_folder = os.path.join(app.root_path, 'uploads')
-                        os.makedirs(upload_folder, exist_ok=True)
-                        file_path = os.path.join(upload_folder, filename)
-                        image.save(file_path)
-                    except Exception as e:
-                        error_message = f"Failed to process image: {e}"
+                # Limit image size and resize if necessary
+                try:
+                    filename = secure_filename(main_image.filename)
+                    # Save file to a secure location, adjust as needed
+                    upload_folder = os.path.join(app.root_path, 'main_images', username)
+                    os.makedirs(upload_folder, exist_ok=True)
+                    file_path = os.path.join(upload_folder, filename)
+                    main_image.save(file_path)
+                except Exception as e:
+                    error_message = "העלאת התמונה נכשלה."
 
             else:
-                error_message = "לא נמצאה תמונה ראשית בבקשה."
+                error_message = "על מנת להירשם לאתר יש להעלות תמונה ראשית של העסק."
 
             # If no errors, proceed with user registration
             if not error_message:
                 try:
-                    user = User(username=username, password=password, name=name, main_image=file_path)
+                    user = User(username=username, password=password, name=name, address=address)
                     db.session.add(user)
                     db.session.commit()
-                    print(f"User {username} registered successfully.")
-                    return redirect(url_for('login'))
+                    user.add_main_image(file_path)
+                    message = "ההרשמה בוצעה בהצלחה! אנא התחבר."
+                    return redirect(url_for('login', message=message))
                 except Exception as e:
                     error_message = f"Failed to register user: {e}"
 
     return render_template('register.html', error_message=error_message)
 
+
+def is_valid_email(email):
+    # Function to validate email format
+    # You can add more robust email validation as per your requirements
+    return '@' in email and '.' in email
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error_message = None
+    message = request.args.get('message')
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username, password=password).first()
-        if user:
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
             session['user'] = user.id
             return redirect(url_for('dashboard'))
-    return render_template('login.html')
+        else:
+            error_message = "שם המשתמש או הסיסמה אינם נכונים. אנא נסה שוב."
+
+    return render_template('login.html', error_message=error_message, message=message)
 
 
 @app.route('/logout')
@@ -101,38 +116,27 @@ def dashboard():
 
     user = User.query.get(session['user'])
     can_create_review = user.can_create_review()
-    # Check if user can create a review
 
     if request.method == 'POST':
         place = request.form['place']
         photos = request.files.getlist('photos')
 
         if len(photos) < 3 or len(photos) > 5:
-            flash('You must upload 3-5 photos for each place.', 'error')
-            return redirect(url_for('dashboard'))
+            error_message = 'You must upload 3-5 photos for each place.'
+            return render_template('dashboard.html', user=user, supported_places=supported_places,
+                                   can_create_review=can_create_review, error_message=error_message)
 
-        # Directory where images will be saved
         save_directory = os.path.join('saved_photos', str(user.id), place)
         os.makedirs(save_directory, exist_ok=True)
 
         for photo in photos:
-            # Secure the filename
             filename = secure_filename(photo.filename)
-
-            # Define the path to save the file
             file_path = os.path.join(save_directory, filename)
-
-            # Save the file to the specified directory
             photo.save(file_path)
-
-            # Save image to the database
             new_image = Image(filepath=file_path, user_id=user.id, place=place)
             db.session.add(new_image)
 
-        # Query the place and update user data
         user.query_and_update_place(place)
-
-        # Commit changes to the database
         db.session.commit()
 
     return render_template('dashboard.html', user=user, supported_places=supported_places,
@@ -175,12 +179,17 @@ def download_report():
         return redirect(url_for('dashboard'))
 
 
-
 @app.route('/guest')
 def guest():
     users = User.query.all()
     users_with_places = [user for user in users if user.places]
     return render_template('guest.html', users=users_with_places)
+
+
+@app.route('/business/<int:user_id>')
+def business_details(user_id):
+    user = User.query.get_or_404(user_id)
+    return render_template('business_details.html', user=user)
 
 
 @app.route('/admin')

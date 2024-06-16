@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import base64
 
 from bidi.algorithm import get_display
 import arabic_reshaper
@@ -14,6 +15,11 @@ def get_queries_dict():
         queries_dict = json.load(file)
 
     return queries_dict
+
+
+def encode_image(image_path):
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 class PDF(FPDF):

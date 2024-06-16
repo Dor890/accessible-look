@@ -2,14 +2,39 @@
 
 {% block content %}
 <div class="registration-page">
-    <h2>הרשמה לבעל עסק</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="text" name="username" placeholder="שם משתמש (אימייל)" required>
-        <input type="password" name="password" placeholder="סיסמה" required>
-        <input type="text" name="name" placeholder="שם העסק">
-        <h6>העלה תמונה ראשית לעסק:</h6>
-        <input type="file" name="main_image" accept="image/*" required>
-        <button type="submit" class="btn btn-primary btn-lg">הירשם</button>
+    <div class="text-center mb-4">
+        <h2 class="display-4">הרשמה לבעל עסק</h2>
+    </div>
+
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+        {{ error_message }}
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" style="max-width: 400px; margin: auto;">
+        <div class="form-group">
+            <input type="text" name="username" class="form-control rounded-pill" placeholder="שם משתמש (אימייל)" required>
+        </div>
+        <div class="form-group">
+            <input type="password" name="password" class="form-control rounded-pill" placeholder="סיסמה" required>
+        </div>
+        <div class="form-group">
+            <input type="text" name="name" class="form-control rounded-pill" placeholder="שם העסק">
+        </div>
+        <div class="form-group">
+            <input type="text" name="address" class="form-control rounded-pill" placeholder="כתובת">
+        </div>
+
+        <div class="text-center mb-3">
+            <h5>העלה תמונה ראשית לעסק:</h5>
+        </div>
+
+        <div class="form-group">
+            <input type="file" name="main_image" class="form-control-file mb-3" accept="image/*" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary rounded-pill btn-block py-3">הירשם</button>
     </form>
 </div>
 {% endblock %}

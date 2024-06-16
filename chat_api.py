@@ -9,12 +9,6 @@ CHAT_ROLE = 'You are an assistant that should validate if places are accessible.
 client = OpenAI()
 
 
-# Open the image file and encode it as a base64 string
-def encode_image(image_path):
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-
 def ask_chat_gpt_with_images(query, images):
     model = 'gpt-4o'
     system_config = {"role": "system", "content": CHAT_ROLE}

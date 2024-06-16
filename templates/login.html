@@ -2,11 +2,32 @@
 
 {% block content %}
 <div class="login-page">
-    <h2>התחבר</h2>
-    <form method="POST">
-        <input type="username" name="username" placeholder="שם משתמש (אימייל)" required>
-        <input type="password" name="password" placeholder="סיסמה" required>
-        <button type="submit" class="btn btn-primary btn-lg">התחבר</button>
-    </form>
+    <div class="text-center mb-4">
+        <h2 class="display-4">התחבר</h2>
+    </div>
+
+    <!-- Container for the form and messages -->
+    <div style="max-width: 400px; margin: auto;">
+
+        <!-- Display error message if it exists -->
+        {% if error_message %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <!-- Display general message if it exists -->
+        {% if message %}
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            <input type="text" name="username" class="form-control rounded-pill mb-3" placeholder="שם משתמש (אימייל)" required>
+            <input type="password" name="password" class="form-control rounded-pill mb-3" placeholder="סיסמה" required>
+            <button type="submit" class="btn btn-primary btn-lg rounded-pill btn-block">התחבר</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

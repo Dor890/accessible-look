@@ -7,7 +7,7 @@ from sqlalchemy import JSON
 from sqlalchemy.ext.mutable import MutableDict
 
 from query_manager import query_place, query_final_result
-from utils import PDF
+from utils import PDF, encode_image
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -22,6 +22,7 @@ class User(db.Model):
     username = db.Column(db.String(30), unique=True, nullable=False)
     password = db.Column(db.String(20), nullable=False)
     name = db.Column(db.String(20))
+    address = db.Column(db.String(30))
     main_image = db.Column(db.String)
     places = db.Column(MutableDict.as_mutable(JSON), default={})
     pdf_report_path = db.Column(db.String, default='')
@@ -91,6 +92,13 @@ class User(db.Model):
         places_uploaded = set(self.places.keys())
 
         return set(supported_places).issubset(places_uploaded)
+
+    def add_main_image(self, file_path):
+        new_image = Image(filepath=file_path, user_id=self.id, place='main_image')
+        db.session.add(new_image)
+        encoded_img = encode_image(file_path)
+        self.main_image = encoded_img
+        db.session.commit()
 
 
 class Image(db.Model):
