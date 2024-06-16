@@ -54,5 +54,16 @@
     "Are there step stools or assistance available for higher shelves?",
     "Are the labels on the shelves easy to read?",
     "Is there enough space between shelves for easy navigation?"
+  ],
+
+  "final_result": [
+    "Generate a detailed accessibility report for user according to the following results: {}.\n\n",
+    "In case you have recommendations to steps that need to be made in order to make the place more",
+    "accessible, write them as well. Write the report in Hebrew. Each title should be written with ",
+    "### at the beginning, and each sub-title should be written with - ** before the sub-title ",
+    "and ** after the sub-title. In the recommendations part, write ### before the part's title, ",
+    "and each recommendation should be in two lines - the first one for the recommendation's title, ",
+    "with - ** before it and ** after it, and the second one should be the recommendation's description, ",
+    "without any symbol."
   ]
 }

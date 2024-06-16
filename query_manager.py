@@ -1,16 +1,12 @@
-import os
-import json
-
+from utils import get_queries_dict
 from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result, encode_image
 
-QUERIES_PATH = os.path.join('static', 'queries.json')
 
-with open(QUERIES_PATH, 'r', encoding='utf-8') as file:
-    queries_dict = json.load(file)
 
 
 def query_place(user, place):
     # Get the list of queries for the given place from queries_dict
+    queries_dict = get_queries_dict()
     queries = queries_dict.get(place)
 
     if queries is None:

@@ -9,3 +9,5 @@ pillow~=10.3.0
 reportlab~=4.2.0
 alembic~=1.13.1
 fpdf~=1.7.2
+python-bidi~=0.4.2
+arabic-reshaper~=3.0.0

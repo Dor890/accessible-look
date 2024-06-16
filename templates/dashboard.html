@@ -7,31 +7,43 @@
     <p>העלה עבור כל אזור בין 3-5 תמונות, וצלם אותו מכמה זוויות שונות</p>
 </div>
 <div class="user-places">
-    <ul>
+    <ul style="list-style-type: none; padding-left: 0;">
         {% for place in supported_places %}
-            <li>
+            <li style="margin-bottom: 1rem;">
                 {% if place in user.places %}
-                    <span style="color: blue;">✔</span>
+                    <span style="color: green;"><i class="bi bi-check2"></i></span>
                     <span>{{ place }}</span>
-                    <button onclick="toggleView('{{ place }}')">View</button>
-                    <div id="view-{{ place }}" style="display: none;">
+                    <button class="btn btn-outline-primary btn-sm" onclick="toggleView('{{ place }}')">
+                        <i class="bi bi-eye"></i> הצג
+                    </button>
+                    <div id="view-{{ place }}" style="display: none; margin-top: 1rem;">
                         <h3>{{ place }}</h3>
-                        <div class="place-images">
-                            {% for image in user.places[place]['images'] %}
-                                <img src="data:image/jpeg;base64,{{ image }}" alt="Image" style="width: 600px; height: 600px;">
-                            {% endfor %}
-                            <p>Condition: {{ user.places[place]['summary'] }}</p>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for image in user.places[place]['images'] %}
+                                        <div class="col-4">
+                                            <img src="data:image/jpeg;base64,{{ image }}" alt="Image" class="img-thumbnail">
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <p class="card-text mt-3"><b><u>תמצית:</u></b><br>{{ user.places[place]['summary'] }}</p>
+                            </div>
                         </div>
                     </div>
                 {% else %}
-                    <span style="color: red;">✘</span>
+                    <span style="color: red;"><i class="bi bi-x"></i></span>
                     <span>{{ place }}</span>
-                    <button onclick="toggleView('upload-{{ place }}')">בחר אזור זה</button>
-                    <div id="upload-{{ place }}" style="display: none;">
+                    <button class="btn btn-outline-success btn-sm" onclick="toggleView('upload-{{ place }}')">
+                        <i class="bi bi-upload"></i> בחר אזור זה
+                    </button>
+                    <div id="upload-{{ place }}" style="display: none; margin-top: 1rem;">
                         <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="place" value="{{ place }}">
                             <input type="file" name="photos" id="photos-{{ place }}" multiple required>
-                            <button type="submit">העלה</button>
+                            <button class="btn btn-primary btn-sm" type="submit">
+                                <i class="bi bi-cloud-upload"></i> העלה
+                            </button>
                         </form>
                     </div>
                 {% endif %}
@@ -40,12 +52,16 @@
     </ul>
     {% if user.final_result %}
         <div>
-            <a href="{{ url_for('download_report') }}" class="btn btn-primary">הורד דוח PDF</a>
+            <a href="{{ url_for('download_report') }}" class="btn btn-primary">
+                <i class="bi bi-file-earmark-pdf"></i> הורד דוח PDF
+            </a>
         </div>
     {% elif can_create_review %}
         <ul>
             <form action="{{ url_for('create_review') }}" method="POST">
-                <button type="submit">צור ביקורת סופית</button>
+                <button class="btn btn-secondary btn-sm" type="submit">
+                    <i class="bi bi-journal-check"></i> צור ביקורת סופית
+                </button>
             </form>
         </ul>
     {% endif %}

@@ -3,10 +3,13 @@
 {% block content %}
 <div class="registration-page">
     <h2>הרשמה לבעל עסק</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="שם משתמש (אימייל)" required>
         <input type="password" name="password" placeholder="סיסמה" required>
-        <button type="submit">הירשם</button>
+        <input type="text" name="name" placeholder="שם העסק">
+        <h6>העלה תמונה ראשית לעסק:</h6>
+        <input type="file" name="main_image" accept="image/*" required>
+        <button type="submit" class="btn btn-primary btn-lg">הירשם</button>
     </form>
 </div>
 {% endblock %}

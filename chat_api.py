@@ -1,6 +1,8 @@
 import base64
 
 from openai import OpenAI
+from utils import get_queries_dict
+
 
 CHAT_ROLE = 'You are an assistant that should validate if places are accessible.'
 
@@ -40,30 +42,12 @@ def ask_chat_gpt_generate_report(user_id, places):
 
 def ask_chat_gpt_final_result(combined_results):
     model = 'gpt-4o'
+    queries_dict = get_queries_dict()
     system_config = {"role": "system", "content": CHAT_ROLE}
     user_config = {"role": "user", "content": []}
-    query = (f"Generate a detailed accessibility report for user according to the following results: {combined_results}.\n\n "
-             f"In case you have recommendations to steps that need to be made in order to make the place more"
-             f"accessible, write them as well. Write the report in Hebrew. Each title should be written with "
-             f"### at the beginning, and each sub-title should be written with - ** before the sub-title "
-             f"and ** after the sub-title. In the recommendations part, write ### before the part's title, "
-             f"and each recommendation should be in two lines - the first one for the recommendation's title, "
-             f"with - ** before it and ** after it, and the second one should be the recommendation's description, "
-             f"without any symbol.")
+    query = ''.join(queries_dict["final_result"]).format(combined_results)
     user_content = [{"type": "text", "text": query}]
     user_config["content"] = user_content
     messages = [system_config, user_config]
     response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
     return response.choices[0].message.content
-
-# if __name__ == '__main__':
-#     image_path1 = "db/our_class/door_1/1.jpg"
-#     image_path2 = "db/our_class/door_1/2.jpg"
-#     image_path3 = "db/our_class/door_1/3.jpg"
-#     image_path4 = "db/our_class/door_1/4.jpg"
-#     images = [encode_image(image_path1), encode_image(image_path2),
-#               encode_image(image_path3), encode_image(image_path4)]
-#     query = ("Can you tell me what is the size of the door (at least an estimation), "
-#              "and if the entry for this business is accessible? Please give a short estimation at first if the business"
-#              " is accessible, and afterwards add a detailed explanation")
-#     print(ask_chat_gpt_with_images(query, images))

@@ -19,8 +19,10 @@ with open(SUPPORTED_PLACES_PATH, 'r', encoding='utf-8') as file:
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    username = db.Column(db.String(30), unique=True, nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(20))
+    main_image = db.Column(db.String)
     places = db.Column(MutableDict.as_mutable(JSON), default={})
     pdf_report_path = db.Column(db.String, default='')
     final_result = db.Column(db.String, default='')
@@ -45,7 +47,10 @@ class User(db.Model):
             self.final_result = final_result
 
             # Generate PDF report
-            report_file_path = f"static/reports/user_{self.id}_report.pdf"
+            reports_path = os.path.join('static', 'reports')
+            if not os.path.exists(reports_path):
+                os.makedirs(reports_path)
+            report_file_path = os.path.join(reports_path, f"user_{self.id}_report.pdf")
 
             # Create PDF instance
             pdf = PDF()
@@ -65,7 +70,7 @@ class User(db.Model):
             # Build the PDF
             pdf.output(report_file_path)
 
-            # Save PDF path in the user's data
+            # Save PDF reports_path in the user's data
             self.pdf_report_path = report_file_path
             db.session.commit()
 

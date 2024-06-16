@@ -1,15 +1,13 @@
-import base64
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
 from werkzeug.utils import secure_filename
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from PIL import Image as PillowImage
 
 from config import Config
 from models import db, migrate, User, Image, supported_places
 
 from sqlalchemy.exc import IntegrityError
-from io import BytesIO
-from PIL import Image as PILImage
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -28,22 +26,53 @@ def register():
     error_message = None
 
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
+        name = request.form.get('name')
 
-        try:
-            user = User(username=username, password=password)
-            db.session.add(user)
-            db.session.commit()
-            print(f"User {username} registered successfully.")
-            return redirect(url_for('login'))
-        except IntegrityError:
-            error_message = f"Username '{username}' already exists. Please choose a different username."
-        except Exception as e:
-            error_message = f"An error occurred: {e}"
+        # Validate required fields
+        if not username or not password:
+            error_message = "שם המשתמש והסיסמה הם שדות חובה. אנא מלא אותם."
+        else:
+            # Handle file upload
+            if 'main_image' in request.files:
+                main_image = request.files['main_image']
+                if main_image.filename == '':
+                    error_message = "יש להעלות תמונה ראשית."
+                else:
+                    # Validate image file type (optional)
+                    if not main_image.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif')):
+                        error_message = "יש להעלות קובץ תמונה בפורמט PNG, JPG, JPEG או GIF."
+
+                    # Limit image size and resize if necessary
+                    try:
+                        max_image_size = (500, 500)  # Max width and height
+                        image = PillowImage.open(main_image)
+                        image.thumbnail(max_image_size, PillowImage.ANTIALIAS)
+                        # Save resized image to a secure location
+                        filename = secure_filename(main_image.filename)
+                        upload_folder = os.path.join(app.root_path, 'uploads')
+                        os.makedirs(upload_folder, exist_ok=True)
+                        file_path = os.path.join(upload_folder, filename)
+                        image.save(file_path)
+                    except Exception as e:
+                        error_message = f"Failed to process image: {e}"
+
+            else:
+                error_message = "לא נמצאה תמונה ראשית בבקשה."
+
+            # If no errors, proceed with user registration
+            if not error_message:
+                try:
+                    user = User(username=username, password=password, name=name, main_image=file_path)
+                    db.session.add(user)
+                    db.session.commit()
+                    print(f"User {username} registered successfully.")
+                    return redirect(url_for('login'))
+                except Exception as e:
+                    error_message = f"Failed to register user: {e}"
 
     return render_template('register.html', error_message=error_message)
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

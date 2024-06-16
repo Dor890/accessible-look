@@ -2,21 +2,39 @@
 
 {% block content %}
 <div class="guest-page">
-    <h2>רשימת העסקים הנגישים</h2>
-    {% for user in users %}
-    <div class="business">
-        <h3>{{ user.username }}</h3>
-        {% for place, data in user.places.items() %}
-            <h4>{{ place }}</h4>
-            <div class="place-images">
-                {% for image in data.images %}
-                    <img src="data:image/jpeg;base64,{{ image }}" alt="Image">
-                {% endfor %}
-                <p>Condition: {{ data.response }}</p>
-            </div>
-        {% endfor %}
-        <p>Final Result: {{ user.final_result }}</p>
+    <div class="text-center mb-4">
+        <h2 class="page-title">רשימת העסקים הנגישים</h2>
     </div>
-    {% endfor %}
+    <div class="row">
+        {% for user in users %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <div class="bg-primary text-light custom-rounded-square">
+                            <h3 class="m-0">{{ user.username }}</h3>
+                        </div>
+                    </div>
+                    {% for place, data in user.places.items() %}
+                        <h4 class="card-subtitle mb-2">{{ place }}</h4>
+                        <div class="place-images mb-2">
+                            <div class="row">
+                                {% for image in data.images %}
+                                    <div class="col-6 mb-2">
+                                        <img src="data:image/jpeg;base64,{{ image }}" alt="Image" class="img-thumbnail">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <p><b><u>תמצית:</u></b><br>{{ data.summary }}</p>
+                        </div>
+                    {% endfor %}
+                    <a href="{{ url_for('download_report', user_id=user.id) }}" class="btn btn-primary">
+                        <i class="bi bi-file-earmark-pdf"></i> הורד דוח PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

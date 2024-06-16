@@ -30,3 +30,9 @@ form input, form select, form button {
     display: block;
     margin: 1em 0;
 }
+
+.custom-rounded-square {
+    background-color: #007bff; /* Example background color */
+    padding: 10px; /* Adjust padding as needed */
+    border-radius: 10px; /* Adjust border-radius to control the curvature */
+}
