@@ -11,65 +11,114 @@
         body {
             direction: rtl;
             text-align: right;
+            font-family: 'Roboto', sans-serif; /* Ensure same font for the entire body */
+            margin: 0;
+            padding: 0;
+        }
+        .header-container {
+            display: flex;
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center items horizontally */
+            padding: 10px 0; /* Padding around the container */
+            background-color: #0f1131;
         }
         .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            font-size: 36px;
+            font-family: 'Roboto', sans-serif; /* Ensure same font */
+            font-size: 40px; /* Increase font size */
             color: #333;
-            margin: 20px 0;
+            margin-bottom: -30px; /* Add space between logo and navbar */
         }
         .logo img {
-            width: 80px;
-            height: 80px;
-            margin-left: 10px;
+            width: 250px; /* Adjust logo width */
+            height: 199px; /* Adjust logo height */
+        }
+        .navbar-container {
+            width: 100%; /* Make navbar container take full width */
+            display: flex;
+            justify-content: center; /* Center the navbar horizontally */
+        }
+        .navbar {
+            background-color: #ADD8E6; /* Light blue background color */
+            padding: 10px 20px; /* Padding for better appearance */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+            width: 90%; /* Make navbar wider */
+            max-width: 1200px; /* Limit maximum width to 1200px */
         }
         .navbar-nav {
-            flex-direction: row-reverse;
+            display: flex;
+            justify-content: space-around; /* Distribute space evenly */
+            align-items: center; /* Center items vertically */
+            width: 100%; /* Ensure the navbar takes full width */
+            padding: 0; /* Remove padding */
+            list-style: none; /* Remove default list styling */
+            margin: 0; /* Remove margins */
         }
         .navbar-nav .nav-item {
-            margin-left: 10px;
+            margin: 0; /* Remove margins between items */
+            text-align: center; /* Center text within each item */
+            flex: 1; /* Ensure each item takes up an equal amount of space */
+        }
+        .navbar-nav .nav-item .nav-link {
+            font-family: 'Roboto', sans-serif; /* Ensure same font */
+            font-size: 18px; /* Increase text size */
+            color: #000; /* Default text color */
+            padding: 15px; /* Add padding for better appearance */
+            display: block;
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+            text-decoration: none; /* Remove underline from links */
+        }
+        .navbar-nav .nav-item:hover {
+            background-color: #e85544; /* Blue background on hover */
+            border-radius: 15px; /* Rounded corners for hover effect */
+        }
+        .navbar-nav .nav-item:hover .nav-link {
+            color: #fff; /* White text color on hover */
         }
     </style>
+    <!-- Link to Google Fonts for Roboto font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="mb-4">
-        <div class="container">
+        <div class="header-container container">
             <div class="logo">
                 <a href="{{ url_for('index') }}">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="לוגו בודק הנגישות">
                 </a>
             </div>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="{{ url_for('index') }}">בית</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="נווט">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ml-auto">
-                        {% if 'user' in session %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('dashboard') }}">ניהול המשתמש</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">התנתק</a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">התחברות</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('register') }}">הרשמה</a>
-                        </li>
-                        {% endif %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('guest') }}">צפייה בעסקים קיימים</a>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+            <div class="navbar-container">
+                <nav class="navbar navbar-expand-lg">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="נווט">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav ml-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('index') }}">בית</a>
+                            </li>
+                            {% if 'user' in session %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('dashboard') }}">ניהול המשתמש</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('logout') }}">התנתק</a>
+                            </li>
+                            {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('login') }}">התחברות</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('register') }}">הרשמה</a>
+                            </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('guest') }}">צפייה בעסקים קיימים</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
         </div>
     </header>
     <main class="container">
@@ -81,4 +130,3 @@
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
-

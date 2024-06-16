@@ -5,9 +5,11 @@ body {
 }
 
 header {
-    background-color: #333;
+    background-color: #0f1131;
     color: white;
-    padding: 1em;
+    padding: 0 1em 1em 1em; /* No top padding */
+    margin: 0; /* Ensure no margin around the header */
+    line-height: 1; /* Tighten line height if there's any impact */
     text-align: center;
 }
 
