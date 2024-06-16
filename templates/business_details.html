@@ -2,33 +2,38 @@
 
 {% block content %}
 <div class="container">
-    <div class="guest-page">
+    <div class="business-details-page">
         <div class="text-center mb-4">
-            <h2 class="page-title">רשימת העסקים הנגישים</h2>
+            <h2 class="page-title">{{ user.name }} - פרטי העסק</h2>
         </div>
         <div class="row">
-            {% for user in users %}
+            {% for place, data in user.places.items() %}
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <div class="text-center mb-3 bg-primary text-light custom-rounded-square p-3">
-                            <!-- Header text inside the blue background -->
-                            <h3 class="m-0">
-                                <!-- Link to detailed view -->
-                                <a href="{{ url_for('business_details', user_id=user.id) }}" class="text-light">{{ user.name }}</a>
-                            </h3>
+                        <h4 class="card-title text-center mb-3">{{ place }}</h4>
+                        <div class="place-images mb-3">
+                            <div class="row">
+                                {% for image in data.images %}
+                                <div class="col-6 mb-2">
+                                    <img src="data:image/jpeg;base64,{{ image }}" alt="Image" class="img-thumbnail">
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <!-- Main image display -->
-                        <div class="text-center mb-2">
-                            <img src="data:image/jpeg;base64,{{ user.main_image }}" alt="Main Image" class="img-thumbnail">
-                        </div>
-                        <!-- Address with label -->
-                        <p class="text-center"><b><u>כתובת:</u></b> {{ user.address }}</p>
+                        <p class="text-center"><b><u>תמצית:</u></b><br>{{ data.summary }}</p>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
+        {% if user.final_result %}
+        <div class="text-center mt-4">
+            <a href="{{ url_for('download_report') }}" class="btn btn-primary">
+                <i class="bi bi-file-earmark-pdf"></i> הורד דוח PDF
+            </a>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

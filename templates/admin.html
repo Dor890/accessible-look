@@ -1,41 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>פאנל מנהל</h1>
-<table>
-    <thead>
-        <tr>
-            <th>שם משתמש</th>
-            <th>מקומות</th>
-            <th>תוצאה סופית</th>
-            <th>פעולות</th> <!-- Add a new column for actions -->
-        </tr>
-    </thead>
-    <tbody>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.username }}</td>
-            <td>
-                {% for place, data in user.places.items() %}
-                    <div>
-                        <strong>{{ place }}</strong>
-                        <div class="place-images">
-                            {% for image in data['images'] %}
-                                <img src="data:image/jpeg;base64,{{ image }}" alt="תמונה">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <h1 class="mb-4">פאנל מנהל</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>שם משתמש</th>
+                        <th>מקומות</th>
+                        <th>תוצאה סופית</th>
+                        <th>פעולות</th> <!-- Add a new column for actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% for place, data in user.places.items() %}
+                                <div>
+                                    <strong>{{ place }}</strong>
+                                    <div class="row place-images">
+                                        {% for image in data['images'] %}
+                                            <div class="col-3 mb-2">
+                                                <img src="data:image/jpeg;base64,{{ image }}" alt="תמונה" class="img-thumbnail">
+                                            </div>
+                                        {% endfor %}
+                                        <div class="col-12">
+                                            <p>מצב: {{ data['summary'] }}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             {% endfor %}
-                            <p>מצב: {{ data['response'] }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </td>
-            <td>{{ user.final_result }}</td>
-            <td> <!-- Add a delete button for each user -->
-                <form action="{{ url_for('delete_user', username=user.username) }}" method="POST">
-                    <button type="submit" class="btn btn-danger">מחק משתמש</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                        </td>
+                        <td>
+                            {% if user.final_result %}
+                                <div class="text-center mt-4">
+                                    <a href="{{ url_for('download_report') }}" class="btn btn-primary">
+                                        <i class="bi bi-file-earmark-pdf"></i> הורד דוח PDF
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td> <!-- Add a delete button for each user -->
+                            <form action="{{ url_for('delete_user', username=user.username) }}" method="POST">
+                                <button type="submit" class="btn btn-danger">מחק משתמש</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
