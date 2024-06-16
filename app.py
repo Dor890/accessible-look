@@ -208,7 +208,7 @@ def delete_user(username):
 
 @app.route('/add_test_user')
 def add_test_user():
-    user = User(username='testuser@gmail.com', password='password')
+    user = User(username='testuser@gmail.com', password='password', name="בדיקה", address="בדיקה", )
     db.session.add(user)
     db.session.commit()  # Commit changes to the database session
     print("Test user added successfully.")
