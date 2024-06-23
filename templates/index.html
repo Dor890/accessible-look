@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container text-center mt-0 px-0">
-    <h2 class="mb-3 fade-in">ברוכים הבאים לבודק הנגישות</h2>
-    <h3 class="mb-2 fade-in">בודק הנגישות</h3>
-    <p class="lead mb-0 fade-in">
-        ברוכים הבאים לבודק הנגישות! אתר זה מיועד לאיסוף ואיחסון נתונים על מקומות נגישים בישראל.
-        נשמח לתרום לקהילה על ידי איסוף נתונים ומידע על מקומות נגישים, כגון חנויות, מסעדות, אתרי תיירות, ועוד.
-        הצטרפו אלינו כדי לשפר את חוויית הגלישה והשימוש לכל אדם בקהילה!
-    </p>
-</div>
-
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap');
+
+    body {
+        font-family: 'Heebo', sans-serif;
+    }
+
     /* Add fade in effect */
     .fade-in {
         opacity: 0;
@@ -23,7 +19,75 @@
         opacity: 1;
         transform: translateY(0);
     }
+
+    .caption {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 10px;
+        color: #555;
+    }
+
+    .img-fluid {
+        max-width: 80%; /* Make images a bit smaller */
+        height: auto;
+    }
+
+    .section {
+        padding: 20px 0;
+    }
+
+    h4 {
+        font-weight: bold;
+    }
+
+    .img-fluid {
+        max-width: 80%; /* Make images a bit smaller */
+        height: auto;
+        border: 1px solid #000; /* Black border */
+    }
 </style>
+
+<div class="container text-center mt-0 px-0">
+    <h2 class="mb-3 fade-in">ברוכים הבאים לבודק הנגישות</h2>
+    <p class="lead mb-0 fade-in">
+        אתר זה מיועד לאיסוף ואיחסון נתונים על עסקים נגישים בישראל.
+        מטרתנו לתרום לקהילה על ידי איסוף נתונים ומידע על מקומות נגישים, כגון חנויות, מסעדות, אתרי תיירות, ועוד.
+        הצטרפו אלינו כדי לשפר את חוויית הגלישה והשימוש לכל אדם בקהילה!
+    </p>
+
+    <div class="row mt-4 section">
+        <div class="col-md-6 fade-in">
+            <p class="caption">כניסה נגישה לעסק</p>
+            <img src="static/images/Ramp.jpg" class="img-fluid rounded" alt="Accessible place example 1">
+        </div>
+        <div class="col-md-6 fade-in">
+            <p class="caption">שילוט הנגשה</p>
+            <img src="static/images/Acc_enter.jpg" class="img-fluid rounded" alt="Accessible place example 2">
+        </div>
+    </div>
+
+    <div class="fade-in mt-4 section">
+        <h4>על האתר</h4>
+        <p class="lead mb-0 fade-in">
+            באתר זה תמצאו מידע רחב על מקומות נגישים בישראל. המידע נאסף על ידי בעלי העסקים ומתעדכן באופן שוטף.
+            שימו לב! כל אחד יכול לתרום למאגר המידע על ידי הוספת ביקורות על על המקומות השונים.
+            המידע כולל כתובות, תמונות, מידע ליצירת קשר ועוד.
+        </p>
+        <p class="lead mb-0 fade-in">
+            המטרה שלנו היא לשפר את הנגישות לכולם ולאפשר לכל אדם ליהנות מהמקומות והשירותים המוצעים ברחבי הארץ.
+            בעזרת האתר, תוכלו למצוא בקלות את המידע שאתם צריכים על מנת לתכנן את הביקור הבא שלכם.
+        </p>
+    </div>
+
+    <div class="fade-in mt-4 section">
+        <h4>מדריך לבעלי עסקים חדשים</h4>
+        <p class="lead mb-0 fade-in">
+            אם אתם בעלי עסקים ורוצים להצטרף למאגר, אנא קראו את
+            <a href="/manual">המדריך לשימוש באתר</a>.
+            המדריך מסביר כיצד להירשם, להוסיף את העסק שלכם, ולעדכן את המידע כך שכל הקהילה תוכל להנות מהשירותים שאתם מציעים.
+        </p>
+    </div>
+</div>
 
 <script>
     // Function to check if an element is in the viewport

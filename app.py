@@ -192,6 +192,11 @@ def business_details(user_id):
     return render_template('business_details.html', user=user)
 
 
+@app.route('/manual')
+def manual():
+    return render_template('manual.html')
+
+
 @app.route('/admin')
 def admin():
     users = User.query.all()
@@ -208,7 +213,7 @@ def delete_user(username):
 
 @app.route('/add_test_user')
 def add_test_user():
-    user = User(username='testuser@gmail.com', password='password', name="בדיקה", address="בדיקה", )
+    user = User(username='testuser@gmail.com', password='password', name="בדיקה", address="בדיקה")
     db.session.add(user)
     db.session.commit()  # Commit changes to the database session
     print("Test user added successfully.")

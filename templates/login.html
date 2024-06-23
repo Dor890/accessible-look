@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="login-page">
+<style>
+    .fade-in {
+        animation: fadeIn 0.8s ease-in;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+</style>
+
+<div class="login-page fade-in">
     <div class="text-center mb-4">
         <h2 class="display-4">התחבר</h2>
     </div>

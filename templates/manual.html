@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        /* Import Heebo font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap');
+
+        /* Add custom styles specific to the manual page */
+        body {
+            font-family: 'Heebo', sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px; /* Increased width for wider container */
+            margin: auto;
+            padding: 20px 20px 0; /* Adjusted padding: top 20px, right/left 20px, bottom 0 */
+            text-align: center; /* Center align text */
+        }
+
+        h2 {
+            margin-bottom: 10px; /* Increased margin between h2 and subsequent content */
+            padding-top: 10px; /* Added padding-top to h2 */
+            padding-bottom: 10px; /* Added padding-bottom to h2 */
+        }
+
+        h3 {
+            margin-bottom: 10px; /* Increased margin between h3 headers */
+            font-weight: bold; /* Make h3 headers bold */
+            padding-top: 50px; /* Added padding-top to h3 */
+            padding-bottom: 20px; /* Added padding-bottom to h3 */
+        }
+
+        ol li {
+            margin-bottom: 10px; /* Adjust margin-bottom between list items */
+            list-style-position: inside; /* Position list number inside the list item */
+        }
+
+        p {
+            margin-bottom: 20px; /* Increased margin between paragraphs */
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 40px; /* Increased margin between steps */
+            opacity: 0; /* Initially hide steps */
+            transform: translateY(20px); /* Move steps down */
+            transition: opacity 1s, transform 1s; /* Transition effect */
+        }
+
+        .step.is-visible {
+            opacity: 1; /* Show steps when visible */
+            transform: translateY(0); /* Move steps to their original position */
+        }
+
+        .step-img {
+            width: 80%;
+            max-width: 1000px; /* Adjusted max-width for images */
+            margin-top: 20px; /* Added margin-top for images */
+            outline: 2px solid #333; /* Add an outline to the images */
+            padding: 5px; /* Optional: Add padding inside the outline */
+        }
+
+        .step-text {
+            flex: 1;
+            text-align: center;
+        }
+    </style>
+
+<div class="container mt-0">
+    <h2 class="mb-4 fade-in">מדריך לבעלי עסקים חדשים</h2>
+
+    <p class="fade-in">
+        אם אתם בעלי עסק ורוצים להוסיף את העסק שלכם למאגר הנגישות,
+        כאן תמצאו מדריך קצר וברור על כיצד להשתמש באתר ולנהל את פרטי העסק שלכם:
+    </p>
+
+    <h3 class="fade-in">שלבים להוספת עסק חדש:</h3>
+
+    <ol class="fade-in">
+        <li>כניסה לאתר ולחיצה על כפתור "הירשם" בסרגל הראשי.</li>
+        <li>מילוי פרטים כגון שם משתמש (אימייל), סיסמה, שם העסק, וכתובת.</li>
+        <li>העלאת תמונה ראשית של העסק.</li>
+        <li>לחיצה על כפתור "הירשם" לאחר מילוי הטופס.</li>
+    </ol>
+
+    <div class="step fade-in">
+        <div class="step-text">
+            <h3>שלב 1: הוספת תמונות</h3>
+            <p>
+                לאחר ההרשמה והתחברות, עליכם להוסיף תמונות לכל אזור בעסק שלכם.
+                יש להעלות תמונות מכמה זוויות שונות לכל אחד מהאזורים השונים, על מנת לקבל את התוצאות הימטביות.
+            </p>
+        </div>
+        <div class="step-img">
+            <img src="static/images/add_place_img.png" alt="Add images">
+        </div>
+    </div>
+
+    <div class="step fade-in">
+        <div class="step-text">
+            <h3>שלב 2: הפקת דוח סופי</h3>
+            <p>
+                לאחר הוספת התמונות לכל מקום בעסק, תוכלו להפיק דוח סופי. הדוח יכלול את כל התמונות שהועלו ויהיה זמין להורדה.
+                ניתן להשתמש בדוח לצרכים פנימיים, קידום עסקי ושיפור הנגישות של העסק.
+            </p>
+        </div>
+        <div class="step-img">
+            <img src="static/images/down_pdf.png" alt="Generate report">
+        </div>
+    </div>
+
+    <p class="fade-in">
+        לאחר הפקת הדוח תוכלו להשתמש בהמלצות המתקבלות עבורכם על מנת שהקהל יכול ליהנות מהעסק בקלות ובנוחות.
+        בנוסף, המשתמשים השונים יוכלו לראות את דירוג הנגישות של העסק שלכם במסך הראשי, ולהתרשם האם הוא נגיש עבורם.
+    </p>
+</div>
+
+<script>
+    // Function to check if an element is in the viewport
+    function isInViewport(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    // Function to handle scroll animation
+    function handleScrollAnimation() {
+        const elements = document.querySelectorAll('.fade-in');
+        elements.forEach(element => {
+            if (isInViewport(element)) {
+                element.classList.add('is-visible');
+            }
+        });
+    }
+
+    // Event listener for scroll animation
+    window.addEventListener('scroll', handleScrollAnimation);
+
+    // Trigger initial animation check
+    handleScrollAnimation();
+</script>
+
+{% endblock %}
