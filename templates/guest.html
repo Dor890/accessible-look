@@ -1,28 +1,42 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    /* CSS for fade-in animation */
+    .fade-in {
+        opacity: 0;
+        animation: fadeInAnimation 0.5s ease-in forwards;
+    }
+
+    @keyframes fadeInAnimation {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+
+<!-- Your main content using Flask/Jinja templating -->
 <div class="container">
     <div class="guest-page">
         <div class="text-center mb-4">
-            <h2 class="page-title">רשימת העסקים הנגישים</h2>
+            <h2 class="page-title fade-in">רשימת העסקים הנגישים</h2>
         </div>
         <div class="row">
             {% for user in users %}
             <div class="col-md-4">
-                <div class="card mb-4">
+                <div class="card mb-4 fade-in"> <!-- Apply fade-in class here -->
                     <div class="card-body">
                         <div class="text-center mb-3 bg-primary text-light custom-rounded-square p-3">
-                            <!-- Header text inside the blue background -->
                             <h3 class="m-0">
-                                <!-- Link to detailed view -->
                                 <a href="{{ url_for('business_details', user_id=user.id) }}" class="text-light">{{ user.name }}</a>
                             </h3>
                         </div>
-                        <!-- Main image display -->
                         <div class="text-center mb-2">
                             <img src="data:image/jpeg;base64,{{ user.main_image }}" alt="Main Image" class="img-thumbnail">
                         </div>
-                        <!-- Address with label -->
                         <p class="text-center"><b><u>כתובת:</u></b> {{ user.address }}</p>
                     </div>
                 </div>
@@ -32,3 +46,21 @@
     </div>
 </div>
 {% endblock %}
+
+<!-- JavaScript (Vanilla or jQuery) for fade-in effect -->
+<script>
+    // Vanilla JavaScript approach
+    document.addEventListener('DOMContentLoaded', function() {
+        var cards = document.querySelectorAll('.row .card');
+        cards.forEach(function(card) {
+            card.classList.add('fade-in');
+        });
+    });
+
+    // jQuery approach (if jQuery is included)
+    /*
+    $(document).ready(function() {
+        $('.row .card').addClass('fade-in');
+    });
+    */
+</script>
