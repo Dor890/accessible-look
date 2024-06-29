@@ -2,6 +2,9 @@ import os
 import re
 import json
 import base64
+from datetime import datetime
+from PIL import Image
+import io
 
 from bidi.algorithm import get_display
 import arabic_reshaper
@@ -25,12 +28,76 @@ def encode_image(image_path):
 class PDF(FPDF):
     def __init__(self):
         super().__init__()
-        self.add_page()
         self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
+        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
         self.set_font('David', '', 12)
         self.set_right_margin(10)
         self.set_left_margin(10)
         self.set_auto_page_break(auto=True, margin=15)
+
+    def header(self):
+        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
+        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
+        self.image('static/images/logo.png', 10, 8, 33)  # Adjust path and size as needed
+        # self.set_font('David', 'B', 12)
+        # self.cell(0, 10, 'תושיגנ חוד', 0, 1, 'C')
+        self.ln(30)
+
+    def footer(self):
+        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
+        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
+        self.set_y(-15)
+        self.set_font('David', '', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+    def cover_page(self, user):
+        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
+        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
+        self.add_page()
+        self.set_font('David', 'B', 16)
+        self.cell(0, 10, 'תושיגנ חוד', 0, 1, 'C')
+        self.ln(20)
+        self.set_font('David', '', 12)
+        self.cell(0, 10, f'Business Name: {user.name[::-1]}', 0, 1, 'C')
+        self.cell(0, 10, f'Business ID: {user.id}', 0, 1, 'C')
+        self.cell(0, 10, f'Date: {datetime.now().strftime("%d-%m-%Y")}', 0, 1, 'C')
+        self.ln(20)
+
+    def table_of_contents(self, toc_items):
+        self.add_page()
+        self.set_font('David', 'B', 12)
+        self.cell(0, 10, 'םיניינע ןכות', 0, 1, 'R')
+        self.ln(10)
+        self.set_font('David', '', 12)
+        for item in toc_items:
+            self.cell(0, 10, f'{item["page"]} ............................. {item["title"][::-1]}', 0, 1, 'R')
+        self.ln(20)
+
+    def add_base64_images(self, base64_images, place_name, width, height, tmp_dir='tmp_images'):
+        if not os.path.exists(tmp_dir):
+            os.makedirs(tmp_dir)
+
+        page_width = self.w
+        margin_right = 10
+        x_offset = page_width - margin_right - (width * len(base64_images)) - (5 * (len(base64_images) - 1))
+
+        for idx, base64_image in enumerate(base64_images):
+            # Decode the base64 image
+            image_data = base64.b64decode(base64_image)
+            image_path = os.path.join(tmp_dir, f'temp_image_{place_name}_{idx}.png')
+
+            # Use PIL to ensure the image is saved correctly as PNG
+            image = Image.open(io.BytesIO(image_data))
+            image.save(image_path, format='PNG')
+
+            # Add the image to the PDF
+            self.image(image_path, x=x_offset, y=self.get_y(), w=width, h=height)
+            x_offset += width + 5  # Adjust the spacing between images
+
+            # Remove the temporary file
+            os.remove(image_path)
+
+        self.ln(height + 5)  # Move to the next line after the images
 
     def write_hebrew(self, text, style='Body'):
         if style == 'Title':
