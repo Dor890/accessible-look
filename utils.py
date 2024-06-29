@@ -31,41 +31,45 @@ class PDF(FPDF):
         self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
         self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
         self.set_font('David', '', 12)
-        self.set_right_margin(10)
-        self.set_left_margin(10)
+        self.set_right_margin(15)
+        self.set_left_margin(15)
         self.set_auto_page_break(auto=True, margin=15)
 
     def header(self):
-        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
-        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
-        self.image('static/images/logo.png', 10, 8, 33)  # Adjust path and size as needed
-        # self.set_font('David', 'B', 12)
-        # self.cell(0, 10, 'תושיגנ חוד', 0, 1, 'C')
-        self.ln(30)
+        self.set_font('David', 'B', 12)
+        self.image('static/images/logo-transparent.png', 10, 8, 45)
+        self.cell(0, 10, '', 0, 1, 'C')
+        self.ln(20)
 
     def footer(self):
-        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
-        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
         self.set_y(-15)
         self.set_font('David', '', 8)
         self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
 
     def cover_page(self, user):
-        self.add_font('David', '', 'fonts/DavidLibre-Regular.ttf', uni=True)
-        self.add_font('David', 'B', 'fonts/DavidLibre-Bold.ttf', uni=True)
         self.add_page()
-        self.set_font('David', 'B', 16)
-        self.cell(0, 10, 'תושיגנ חוד', 0, 1, 'C')
+        self.set_font('David', 'B', 24)
+        title = 'תושיגנ חוד'
+        business_name = f'Business Name: {user.name[::-1]}'
+        business_id = f'Business ID: {user.id}'
+        date = f'Date: {datetime.now().strftime("%d-%m-%Y")}'
+
+        # Calculate vertical position for centering
+        cover_text_height = 60  # Estimated height of the cover text block
+        y_start = (self.h - cover_text_height) / 2
+
+        self.set_y(y_start)
+        self.cell(0, 10, title, 0, 1, 'C')
         self.ln(20)
-        self.set_font('David', '', 12)
-        self.cell(0, 10, f'Business Name: {user.name[::-1]}', 0, 1, 'C')
-        self.cell(0, 10, f'Business ID: {user.id}', 0, 1, 'C')
-        self.cell(0, 10, f'Date: {datetime.now().strftime("%d-%m-%Y")}', 0, 1, 'C')
+        self.set_font('David', '', 16)
+        self.cell(0, 10, business_name, 0, 1, 'C')
+        self.cell(0, 10, business_id, 0, 1, 'C')
+        self.cell(0, 10, date, 0, 1, 'C')
         self.ln(20)
 
     def table_of_contents(self, toc_items):
         self.add_page()
-        self.set_font('David', 'B', 12)
+        self.set_font('David', 'B', 16)
         self.cell(0, 10, 'םיניינע ןכות', 0, 1, 'R')
         self.ln(10)
         self.set_font('David', '', 12)
@@ -78,37 +82,29 @@ class PDF(FPDF):
             os.makedirs(tmp_dir)
 
         page_width = self.w
-        margin_right = 10
+        margin_right = 15
         x_offset = page_width - margin_right - (width * len(base64_images)) - (5 * (len(base64_images) - 1))
 
         for idx, base64_image in enumerate(base64_images):
-            # Decode the base64 image
             image_data = base64.b64decode(base64_image)
             image_path = os.path.join(tmp_dir, f'temp_image_{place_name}_{idx}.png')
-
-            # Use PIL to ensure the image is saved correctly as PNG
             image = Image.open(io.BytesIO(image_data))
             image.save(image_path, format='PNG')
-
-            # Add the image to the PDF
             self.image(image_path, x=x_offset, y=self.get_y(), w=width, h=height)
-            x_offset += width + 5  # Adjust the spacing between images
-
-            # Remove the temporary file
+            x_offset += width + 5
             os.remove(image_path)
 
-        self.ln(height + 5)  # Move to the next line after the images
+        self.ln(height + 5)
 
     def write_hebrew(self, text, style='Body'):
         if style == 'Title':
-            self.set_font('David', '', 18)
+            self.set_font('David', 'B', 18)
         elif style == 'Subtitle':
-            self.set_font('David', '', 14)
+            self.set_font('David', 'B', 14)
         else:
             self.set_font('David', '', 12)
 
         paragraphs = text.split("\n")
-
         for paragraph in paragraphs:
             if paragraph.strip():
                 reshaped_text = arabic_reshaper.reshape(paragraph)
@@ -119,20 +115,17 @@ class PDF(FPDF):
     def write_hebrew_paragraph(self, text):
         page_width = self.w - self.r_margin - self.l_margin
         lines = self.split_text_to_lines(text, page_width)
-
         for line in lines:
             self.cell(0, 10, line, ln=True, align='R')
 
     def split_text_to_lines(self, text, max_width):
         words = re.split(r'(\s+)', text)
         words.reverse()
-
         lines = []
         current_line = ''
 
         for word in words:
             test_line = current_line + word if current_line else word
-
             if self.get_string_width(test_line) <= max_width:
                 current_line = test_line
             else:
@@ -145,11 +138,8 @@ class PDF(FPDF):
         if current_line.strip():
             lines.append(current_line.strip())
 
-        # Reverse the lines for RTL text
         for i, line in enumerate(lines):
             words = line.split()
             words.reverse()
             lines[i] = ' '.join(words)
-        # lines.reverse()
-
         return lines

@@ -38,29 +38,18 @@ class User(db.Model):
 
     def produce_final_result(self):
         places_with_photos = [place for place in supported_places if place in self.places]
-
         if len(places_with_photos) == len(supported_places):
             results = {place: self.places[place]['result'] for place in supported_places}
-
-            # Generate final result using the query_final_result function
             final_result = query_final_result(results)
-
-            # Save the final result
             self.final_result = final_result
 
-            # Generate PDF report
             reports_path = os.path.join('static', 'reports')
             if not os.path.exists(reports_path):
                 os.makedirs(reports_path)
             report_file_path = os.path.join(reports_path, f"user_{self.id}_report.pdf")
 
-            # Create PDF instance
             pdf = PDF()
-
-            # Add cover page
             pdf.cover_page(self)
-
-            # Prepare table of contents
             toc_items = []
             current_page = 1
             for line in final_result.split('\n'):
@@ -68,18 +57,13 @@ class User(db.Model):
                     current_page += 1
                     title = line[4:]
                     toc_items.append({"title": title, "page": current_page if current_page > 2 else 3})
-
-            # Add table of contents
             pdf.table_of_contents(toc_items)
-
-            # Add content
             pdf.add_page()
             for line in final_result.split('\n'):
-                # Detect headers and regular text
                 if line.startswith("###"):
                     hebrew_text = line[4:]
                     pdf.write_hebrew(hebrew_text, 'Title')
-                    place_name = hebrew_text.strip()  # Get place name from the header
+                    place_name = hebrew_text.strip()
                     if place_name in self.places:
                         pdf.add_base64_images(self.places[place_name]['images'], place_name, width=50, height=50)
                 elif line.startswith("- **"):
@@ -91,18 +75,12 @@ class User(db.Model):
                 else:
                     hebrew_text = line
                     pdf.write_hebrew(hebrew_text, 'Normal')
-
-            # Build the PDF
             pdf.output(report_file_path)
-
-            # Save PDF report path in the user's data
             self.pdf_report_path = report_file_path
             db.session.commit()
-
             return final_result
         else:
             return None
-
 
     def query_and_update_place(self, place):
         # Query the place
