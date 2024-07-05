@@ -36,8 +36,8 @@ def query_comment(place_result, comment_img, comment_text):
 
 
 def query_final_result(results):
-    # Combine all results into a single data structure
-    combined_results = "; ".join([f"{place}: {result}" for place, result in results.items()])
+    # Combine all results into a single data structure, filter out non-existing places
+    combined_results = "; ".join([f"{place}: {result}" for place, result in results.items() if 'המשתמש הצהיר' not in result])
 
     # Send the combined results to the ask_chat_gpt_final_result function
     final_result = ask_chat_gpt_final_result(combined_results)

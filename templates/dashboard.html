@@ -8,7 +8,6 @@
                 <div class="card-body">
                     <h1 class="card-title text-center mb-4">מסך ניהול המידע</h1>
 
-                    <!-- Display error message if it exists -->
                     {% if error_message %}
                     <div class="alert alert-danger text-center" role="alert">
                         {{ error_message }}
@@ -24,7 +23,6 @@
 
                     <div class="text-center">
                         <h3 class="text-center">שלום, {{ user.name }}</h3>
-                        <!-- Display the main image with a title if it exists -->
                         {% if user.main_image %}
                         <h5 class="text-center mt-3">תמונת העסק</h5>
                         <div class="mb-4 text-center">
@@ -33,20 +31,29 @@
                         {% endif %}
                         <p class="text-center mb-4">העלה עבור כל איזור בין 3-5 תמונות, וצלם אותו מכמה זוויות שונות</p>
                         <a href="/manual" class="btn btn-info">מדריך להעלאת התמונות</a>
-                        <div style="margin-top: 20px;"></div> <!-- Adds space of 20px after the button -->
+                        <div style="margin-top: 20px;"></div>
                     </div>
+
                     <div class="user-places">
                         <ul class="list-unstyled">
                             {% for place in supported_places %}
                             <li class="mb-4">
-                                {% if place in user.places %}
                                 <div class="d-flex align-items-center">
-                                    <span style="color: green;"><i class="bi bi-check2"></i></span>
-                                    <span class="ms-2">{{ place }}</span>&nbsp;
+                                    <label for="checkbox-{{ place }}" class="ms-2">{{ place }}&nbsp;&nbsp;&nbsp;</label>
+                                    {% if place in user.places %}
                                     <button class="btn btn-outline-primary btn-sm ms-auto" onclick="toggleView('{{ place }}')">
                                         <i class="bi bi-eye"></i> הצג
                                     </button>
+                                    <button class="btn btn-outline-danger btn-sm ms-2" onclick="resetPlace('{{ place }}')">
+                                        <i class="bi bi-trash"></i> אפס
+                                    </button>
+                                    {% else %}
+                                    <button class="btn btn-outline-success btn-sm ms-auto" onclick="toggleView('upload-{{ place }}')">
+                                        <i class="bi bi-upload"></i> בחר אזור זה
+                                    </button>
+                                    {% endif %}
                                 </div>
+                                {% if place in user.places %}
                                 <div id="view-{{ place }}" class="mt-3" style="display: none;">
                                     <h3>{{ place }}</h3>
                                     <div class="card">
@@ -62,34 +69,38 @@
                                         </div>
                                     </div>
                                 </div>
-                                {% else %}
-                                <div class="d-flex align-items-center">
-                                    <span style="color: red;"><i class="bi bi-x"></i></span>
-                                    <span class="ms-2">{{ place }}</span>&nbsp;
-                                    <button class="btn btn-outline-success btn-sm ms-auto" onclick="toggleView('upload-{{ place }}')">
-                                        <i class="bi bi-upload"></i> בחר אזור זה
-                                    </button>
-                                </div>
+                                {% endif %}
                                 <div id="upload-{{ place }}" class="mt-3" style="display: none;">
                                     <form action="{{ url_for('dashboard') }}" method="POST" enctype="multipart/form-data">
                                         <input type="hidden" name="place" value="{{ place }}">
-                                        <input type="file" name="photos" id="photos-{{ place }}" multiple required>
+                                        <input type="file" name="photos_{{ place }}" id="photos-{{ place }}" multiple required>
                                         <button class="btn btn-primary btn-sm" type="submit">
                                             <i class="bi bi-cloud-upload"></i> העלה
                                         </button>
+                                    </form>
+                                </div>
+                                {% if place in ["שילוט", "ישיבה", "מכונות מכירה ושירות", "שירותים"] %}
+                                <div class="form-check mt-2">
+                                    <form method="POST" action="{{ url_for('update_place_status') }}">
+                                        <input type="hidden" name="place" value="{{ place }}">
+                                        <input class="form-check-input" type="checkbox" name="place_exists" id="checkbox-{{ place }}" {% if place not in user.places or user.places[place].get('exists', True) %}checked{% endif %} onchange="this.form.submit()">
+                                        <label class="form-check-label" for="checkbox-{{ place }}">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;קיים בעסק
+                                        </label>
                                     </form>
                                 </div>
                                 {% endif %}
                             </li>
                             {% endfor %}
                         </ul>
+
                         {% if user.final_result %}
                         <div class="text-center mt-4">
                             <a href="{{ url_for('download_report') }}" class="btn btn-primary">
                                 <i class="bi bi-file-earmark-pdf"></i> הורד דוח PDF
                             </a>
                         </div>
-                        {% elif can_create_review %}
+                        {% elif user.can_create_review() %}
                         <div class="text-center mt-4">
                             <form action="{{ url_for('create_review') }}" method="POST">
                                 <button class="btn btn-secondary btn-sm" type="submit">
@@ -106,7 +117,6 @@
 </div>
 
 <script>
-// JavaScript function to toggle the visibility of the div
 function toggleView(divId) {
     var divElement = document.getElementById('view-' + divId) || document.getElementById(divId);
     if (divElement.style.display === 'none' || divElement.style.display === '') {
@@ -114,6 +124,22 @@ function toggleView(divId) {
     } else {
         divElement.style.display = 'none';
     }
+}
+
+function resetPlace(place) {
+    fetch('{{ url_for("reset_place") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ user_id: {{ user.id }}, place: place })
+    }).then(response => {
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert('Error resetting place');
+        }
+    });
 }
 </script>
 {% endblock %}

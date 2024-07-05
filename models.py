@@ -32,15 +32,15 @@ class User(db.Model):
 
     def add_place(self, place, images, result):
         if place not in self.places:
-            self.places[place] = {'images': [], 'result': result, 'summary': ''}
+            self.places[place] = {'images': [], 'result': result, 'summary': '', 'exists': True}
         self.places[place]['images'].extend(images)
         self.places[place]['summary'] = list(self.places[place]['result'].values())[-1]
         db.session.commit()
 
     def produce_final_result(self):
-        places_with_photos = [place for place in supported_places if place in self.places]
+        places_with_photos = [place for place in supported_places if place in self.places and self.places[place]['images']]
         if len(places_with_photos) == len(supported_places):
-            results = {place: self.places[place]['result'] for place in supported_places}
+            results = {place: self.places[place]['result'] for place in places_with_photos}
             final_result = query_final_result(results)
             self.final_result = final_result
 
@@ -84,17 +84,20 @@ class User(db.Model):
             return None
 
     def query_and_update_place(self, place):
-        # Query the place
-        base64_images, result = query_place(self, place)
-        # Add the queried place to user data
-        self.add_place(place, base64_images, result)
-        # Commit changes to the database
+        if place in self.places and not self.places[place]['images']:
+            self.places[place]['summary'] = 'המשתמש הצהיר כי המקום לא קיים בעסק.'
+        else:
+            base64_images, result = query_place(self, place)
+            self.add_place(place, base64_images, result)
         db.session.commit()
 
-    def can_create_review(self):
-        # Check if the user has uploaded images for all places
-        places_uploaded = set(self.places.keys())
+    def reset_place(self, place):
+        if place in self.places:
+            del self.places[place]
+            db.session.commit()
 
+    def can_create_review(self):
+        places_uploaded = set(self.places.keys())
         return set(supported_places).issubset(places_uploaded)
 
     def add_main_image(self, file_path):

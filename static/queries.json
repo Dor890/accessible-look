@@ -1,62 +1,57 @@
 {
-  "כניסה לעסק": [
-    "Is the entrance clearly marked?",
-    "Is there a ramp for wheelchair access?",
-    "Is the entrance wide enough for a wheelchair to pass through easily?",
-    "Is the entrance free of any obstacles or steps?",
-    "Summarize all your answers to the previous questions (Is the entrance clearly marked?, Is there a ramp for wheelchair access?, Is the entrance wide enough for a wheelchair to pass through easily?, Is the entrance free of any obstacles or steps?) and translate the summary to hebrew (show only the translation)"
-  ],
+    "כניסה לעסק": [
+        "If the accessible entrance is not the main entrance, is there clear directional signage from the main entrance to the accessible entrance?",
+        "Is there a clear area (free of obstacles) in front of the entrance doors (both inside and outside) with dimensions of 170 cm X 130 cm or 150 cm X 150 cm?",
+        "If the height difference at the entrance door is more than 1 cm, is there a solution to overcome the height difference such as a ramp with a recommended width of at least 75 cm?",
+        "If there are stairs, is there also a standard ramp, lift, or elevator next to them?",
+        "Is the clear width for passage on the ramp at least 110 cm and the slope up to 10%? If the length of the ramp is up to 250 cm, can the slope be up to 12.5%? If it is not possible to install a ramp with these dimensions, is there a stable mobile ramp with a width of 90 cm and a slope of up to 12%?",
+        "Summarize all your answers to the previous questions (If the accessible entrance is not the main entrance, Is there clear directional signage from the main entrance to the accessible entrance?, Is there a clear area (free of obstacles) in front of the entrance doors (both inside and outside) with dimensions of 170 cm X 130 cm or 150 cm X 150 cm?, If the height difference at the entrance door is more than 1 cm, is there a solution to overcome the height difference such as a ramp with a recommended width of at least 75 cm?, If there are stairs, is there also a standard ramp, lift, or elevator next to them?, Is the clear width for passage on the ramp at least 110 cm and the slope up to 10%? If the length of the ramp is up to 250 cm, can the slope be up to 12.5%? If it is not possible to install a ramp with these dimensions, is there a stable mobile ramp with a width of 90 cm and a slope of up to 12%) and translate the summary to hebrew (show only the translation)"
+    ],
+    "דלתות": [
+        "Are the doors automatic or easy to open? Or is there an intercom with an activation button located at a height of up to 140 cm from the floor?",
+        "Are the door handles of the lever type?",
+        "Is the door opening width at least 75 cm?",
+        "For glass doors and partitions wider than 75 cm, are there markings such as stickers with a diameter of at least 15 cm in two contrasting colors? Are the markings placed at two heights: one at 90 cm and the other at 150 cm from the floor? (This does not apply if there is a horizontal component at a height of 90-160 cm or when the distance between vertical components is no greater than 60 cm.)",
+        "Summarize all your answers to the previous questions (Are the doors automatic or easy to open? Or is there an intercom with an activation button located at a height of up to 140 cm from the floor?, Are the door handles of the lever type?, Is the door opening width at least 75 cm?, For glass doors and partitions wider than 75 cm, are there markings such as stickers with a diameter of at least 15 cm in two contrasting colors? Are the markings placed at two heights: one at 90 cm and the other at 150 cm from the floor? (This does not apply if there is a horizontal component at a height of 90-160 cm or when the distance between vertical components is no greater than 60 cm.)) and translate the summary to hebrew (show only the translation)"
+    ],
+    "ריצוף": [
+        "Is the floor made of hard material and free of protrusions and indentations?",
+        "Summarize all your answers to the previous questions (Is the floor made of hard material and free of protrusions and indentations?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "מעברים": [
+        "Are the aisles in the business and between fixed shelves and furniture at least 90 cm wide?",
+        "Are there no obstacles (such as plants, boxes, and chairs) on the way to the service counter?",
+        "Are all public passageways at least 80 cm wide?",
+        "Summarize all your answers to the previous questions (Are the aisles in the business and between fixed shelves and furniture at least 90 cm wide?, Are there no obstacles (such as plants, boxes, and chairs) on the way to the service counter?, Are all public passageways at least 80 cm wide?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "דלפק שירות": [
+        "Is there a clear area in front of the service counter with dimensions of 170 cm X 130 cm or 150 cm X 150 cm?",
+        "Is at least one section of the service counter at least 90 cm wide and the surface height below 110 cm?",
+        "For service counters where the customer sits: is the surface height between 73-80 cm? Is the width at least 90 cm? Is there a free knee space of at least 48 cm on the customer's side?",
+        "Is there a hearing aid system at the service counter, connected to electricity whenever the business is open, and have service providers been trained to operate it?",
+        "Summarize all your answers to the previous questions (Is there a clear area in front of the service counter with dimensions of 170 cm X 130 cm or 150 cm X 150 cm?, Is at least one section of the service counter at least 90 cm wide and the surface height below 110 cm?, For service counters where the customer sits: is the surface height between 73-80 cm? Is the width at least 90 cm? Is there a free knee space of at least 48 cm on the customer's side?, Is there a hearing aid system at the service counter, connected to electricity whenever the business is open, and have service providers been trained to operate it?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "שילוט": [
+        "Are the signs in the business written in simple and clear language, with large and clear letters in a contrasting color to the background? Are they compliant with the accessibility standard at the time of purchase?",
+        "Summarize all your answers to the previous questions (Are the signs in the business written in simple and clear language, with large and clear letters in a contrasting color to the background? Are they compliant with the accessibility standard at the time of purchase?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "ישיבה": [
+        "If there are chairs for public use, are at least 10% and no less than one chair stable, with armrests and a backrest with the specified dimensions?",
+        "In a place providing catering services, are 5% of the tables and at least one table with free space for seating a person with a wheelchair and a surface height of 73-80 cm and a depth of at least 48 cm?",
+        "Summarize all your answers to the previous questions (If there are chairs for public use, are at least 10% and no less than one chair stable, with armrests and a backrest with the specified dimensions?, In a place providing catering services, are 5% of the tables and at least one table with free space for seating a person with a wheelchair and a surface height of 73-80 cm and a depth of at least 48 cm?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "מכונות מכירה ושירות": [
+        "If vending machines, payment machines, or automatic service machines are installed, is there a free area of at least 170 cm X 130 cm or 150 cm X 150 cm in front of the machine? Are the operating components (buttons, payment, product delivery) located at a height of 38-140 cm?",
+        "Summarize all your answers to the previous questions (If vending machines, payment machines, or automatic service machines are installed, is there a free area of at least 170 cm X 130 cm or 150 cm X 150 cm in front of the machine? Are the operating components (buttons, payment, product delivery) located at a height of 38-140 cm?) and translate the summary to hebrew (show only the translation)"
+    ],
+    "שירותים": [
+        "If there is a public restroom inside the business, is a sink installed at a height of 80-85 cm with a lever-type faucet or automatic operation?",
+        "Are grab bars installed on both sides of the toilet and on the inner side of the door?",
+        "Are the internal dimensions of the restroom at least 150 cm X 200 cm?",
+        "Summarize all your answers to the previous questions (If there is a public restroom inside the business, is a sink installed at a height of 80-85 cm with a lever-type faucet or automatic operation?, Are grab bars installed on both sides of the toilet and on the inner side of the door?, Are the internal dimensions of the restroom at least 150 cm X 200 cm?) and translate the summary to hebrew (show only the translation)"
+    ],
 
-  "דלת הכניסה": [
-    "Are the doors automatic or easy to open?",
-    "Are the doors wide enough for wheelchair access?",
-    "Are the door handles easy to grasp and use?",
-    "Do the doors have a clear glass panel for visibility?",
-    "Summarize all your answers to the previous questions (Are the doors automatic or easy to open?, Are the doors wide enough for wheelchair access?, Are the door handles easy to grasp and use?, Do the doors have a clear glass panel for visibility?) and translate the summary to hebrew (show only the translation)"
-  ],
-
-  "מעברים": [
-    "Are the aisles wide enough for a wheelchair to pass through comfortably?",
-    "Are the aisles free of obstacles and clutter?",
-    "Are the floor surfaces smooth and non-slip?",
-    "Is there adequate lighting in the aisles?"
-  ],
-  "דלפקים": [
-    "Are the counters at a height accessible for people in wheelchairs?",
-    "Are there lowered sections of the counters for better accessibility?",
-    "Is there enough space in front of the counters for wheelchair maneuvering?",
-    "Are the payment terminals reachable from a seated position?"
-  ],
-
-  "שירותים": [
-    "Are there accessible restrooms available?",
-    "Is there enough space for wheelchair maneuvering inside the restrooms?",
-    "Are the restroom fixtures (sink, toilet) at an accessible height?",
-    "Are there grab bars installed in the restrooms?"
-  ],
-
-  "חנייה": [
-    "Are there designated accessible parking spaces available?",
-    "Are the accessible parking spaces close to the entrance?",
-    "Are the parking spaces wide enough for wheelchair access?",
-    "Is the path from the parking area to the entrance smooth and obstacle-free?"
-  ],
-
-  "מעליות": [
-    "Are elevators available for access to different floors?",
-    "Are the elevator buttons at an accessible height?",
-    "Is there audible and visual indication of floors in the elevator?",
-    "Is the elevator large enough to accommodate a wheelchair?"
-  ],
-
-  "מדפים": [
-    "Are items on shelves reachable from a seated position?",
-    "Are there step stools or assistance available for higher shelves?",
-    "Are the labels on the shelves easy to read?",
-    "Is there enough space between shelves for easy navigation?"
-  ],
-
-  "final_result": [
+    "final_result": [
     "Generate a detailed accessibility report for user according to the following results: {}.\n\n",
     "In case you have recommendations to steps that need to be made in order to make the place more",
     "accessible, write them as well. Write the report in Hebrew. Each title should be written with ",

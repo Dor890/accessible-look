@@ -6,7 +6,7 @@ from PIL import Image as PillImage
 from PIL.ExifTags import TAGS, GPSTAGS
 from werkzeug.utils import secure_filename
 from location_validator import validate_photo_in_place
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file, jsonify
 
 from config import Config
 from models import db, migrate, User, Image, supported_places, Comment
@@ -133,15 +133,19 @@ def dashboard():
     user = User.query.get(session['user'])
     can_create_review = user.can_create_review()
     message = None
+    supported_places_length = len(supported_places)
 
     if request.method == 'POST':
-        place = request.form['place']
-        photos = request.files.getlist('photos')
+        place = request.form.get('place')
+        if place:
+            photos = request.files.getlist(f'photos_{place}')
+            place_exists = request.form.get(f'place_exists_{place}', 'on') == 'on'
 
-        if len(photos) < 3 or len(photos) > 5:
-            error_message = 'עליך להעלות בין 3 ל-5 תמונות בכל אזור.'
-            return render_template('dashboard.html', user=user, supported_places=supported_places,
-                                   can_create_review=can_create_review, error_message=error_message)
+        if place_exists:
+            if len(photos) < 3 or len(photos) > 5:
+                error_message = 'עליך להעלות בין 3 ל-5 תמונות בכל אזור.'
+                return render_template('dashboard.html', user=user, supported_places=supported_places,
+                                       can_create_review=can_create_review, error_message=error_message)
 
         save_directory = os.path.join('saved_photos', str(user.id), place)
         os.makedirs(save_directory, exist_ok=True)
@@ -159,12 +163,47 @@ def dashboard():
             new_image = Image(filepath=file_path, user_id=user.id, place=place)
             db.session.add(new_image)
 
+        else:
+            user.places[place] = {'images': [], 'result': 'המשתמש הצהיר כי המקום לא קיים בעסק.', 'summary': ''}
+            db.session.commit()
+
         user.query_and_update_place(place)
         db.session.commit()
         message = "התמונות הועלו בהצלחה!"
 
     return render_template('dashboard.html', user=user, supported_places=supported_places,
                            can_create_review=can_create_review, message=message)
+
+
+@app.route('/update_place_status', methods=['POST'])
+def update_place_status():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get(session['user'])
+    place = request.form.get('place')
+    place_exists = request.form.get('place_exists') == 'on'
+
+    if user and place:
+        if place not in user.places:
+            user.places[place] = {'images': [], 'result': '', 'summary': 'המשתמש הצהיר שהמקום לא קיים בעסק', 'exists': place_exists}
+        else:
+            user.places[place]['exists'] = place_exists
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    return jsonify({'message': 'Error updating place status'}), 400
+
+
+@app.route('/reset_place', methods=['POST'])
+def reset_place():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    place = data.get('place')
+    user = User.query.get(user_id)
+    if user:
+        user.reset_place(place)
+        return jsonify({'message': 'Place reset successfully'}), 200
+    return jsonify({'message': 'Error resetting place'}), 400
 
 
 @app.route('/create_review', methods=['POST'])
