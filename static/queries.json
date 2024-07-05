@@ -65,5 +65,16 @@
     "and each recommendation should be in two lines - the first one for the recommendation's title, ",
     "with - ** before it and ** after it, and the second one should be the recommendation's description, ",
     "without any symbol."
+  ],
+
+  "comment": [
+    "Your response regarding the accessibility of this place is the following: {}. ",
+    "The text submitted by the customer is {}.",
+    "You should be the deciding one regarding the accessibility of this given place. You can see the response you provided us ",
+    "previously regarding this place's accessibility after you saw its images, and now there is a customer saying what he thinks about that, ",
+    "when he also provided an image to strengthen the claims. You should answer what you think about that. ",
+    "Note that the customer might be frustrated or have some bad will to harm the business owner, so you should judge this ",
+    "claims very seriously and give a precise answer.",
+    "Summarize your answer into 1-2 sentences and translate the summary to hebrew (show only the translation)."
   ]
 }

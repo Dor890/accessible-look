@@ -1,14 +1,15 @@
 import os
-import json
 import re
+import json
+from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from sqlalchemy import JSON
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.mutable import MutableDict
 
-from query_manager import query_place, query_final_result
 from utils import PDF, encode_image
+from query_manager import query_place, query_comment, query_final_result
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -103,11 +104,26 @@ class User(db.Model):
         self.main_image = encoded_img
         db.session.commit()
 
+    def query_and_update_comment(self, place, comment):
+        response = query_comment(self.places[place]['result'], comment.image_data, comment.comment_text)
+        comment.response = response
+        db.session.commit()
+
 
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.LargeBinary)
     filename = db.Column(db.String(255))
     filepath = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     place = db.Column(db.String(255))
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    place = db.Column(db.String(100), nullable=False)
+    comment_text = db.Column(db.Text, nullable=False)
+    image_data = db.Column(db.LargeBinary, nullable=True)  # Store images as LargeBinary
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('comments', lazy=True))
+    response = db.Column(db.Text)

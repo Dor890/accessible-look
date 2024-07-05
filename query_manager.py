@@ -1,16 +1,14 @@
-from utils import get_queries_dict
-from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result
+import base64
+
 from utils import encode_image
+from utils import get_queries_dict
+from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result, ask_chat_gpt_comment
 
 
 def query_place(user, place):
     # Get the list of queries for the given place from queries_dict
     queries_dict = get_queries_dict()
     queries = queries_dict.get(place)
-
-    if queries is None:
-        print(f"No queries found for place: {place}")
-        return [], "No queries found"
 
     # Import Image here to avoid circular import
     from models import Image
@@ -28,6 +26,13 @@ def query_place(user, place):
         results[query] = result
 
     return base64_images, results
+
+
+def query_comment(place_result, comment_img, comment_text):
+    comment_img_base64 = base64.b64encode(comment_img).decode('utf-8')
+    comment_response = ask_chat_gpt_comment(place_result, comment_img_base64, comment_text)
+
+    return comment_response
 
 
 def query_final_result(results):

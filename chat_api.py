@@ -45,3 +45,17 @@ def ask_chat_gpt_final_result(combined_results):
     messages = [system_config, user_config]
     response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
     return response.choices[0].message.content
+
+
+def ask_chat_gpt_comment(place_result, comment_img, comment_text):
+    model = 'gpt-4o'
+    queries_dict = get_queries_dict()
+    query = ''.join(queries_dict["comment"]).format(place_result, comment_text)
+    system_config = {"role": "system", "content": CHAT_ROLE}
+    user_config = {"role": "user", "content": []}
+    user_content = [{"type": "text", "text": query}]
+    user_content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{comment_img}"}})
+    user_config["content"] = user_content
+    messages = [system_config, user_config]
+    response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
+    return response.choices[0].message.content

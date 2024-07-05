@@ -1,11 +1,15 @@
 import os
+import base64
 
+from utils import encode_image
+from PIL import Image as PillImage
+from PIL.ExifTags import TAGS, GPSTAGS
 from werkzeug.utils import secure_filename
+from location_validator import validate_photo_in_place
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
-from PIL import Image as PillowImage
 
 from config import Config
-from models import db, migrate, User, Image, supported_places
+from models import db, migrate, User, Image, supported_places, Comment
 
 from sqlalchemy.exc import IntegrityError
 
@@ -14,6 +18,18 @@ app.config.from_object(Config)
 
 db.init_app(app)
 migrate.init_app(app, db)
+
+
+# Define the custom filter
+@app.template_filter('b64encode')
+def b64encode_filter(data):
+    if data:
+        return base64.b64encode(data).decode('utf-8')
+    return ''
+
+
+# Register the filter
+app.jinja_env.filters['b64encode'] = b64encode_filter
 
 
 @app.route('/')
@@ -96,7 +112,7 @@ def login():
             session['user'] = user.id
             return redirect(url_for('dashboard'))
         else:
-            error_message = "שם המשתמש או הסיסמה אינם נכונים. אנא נסה שוב."
+            error_message = "שם המשתמש או הסיסמה אינם נכונים, אנא נסה שוב."
 
     return render_template('login.html', error_message=error_message, message=message)
 
@@ -116,13 +132,14 @@ def dashboard():
 
     user = User.query.get(session['user'])
     can_create_review = user.can_create_review()
+    message = None
 
     if request.method == 'POST':
         place = request.form['place']
         photos = request.files.getlist('photos')
 
         if len(photos) < 3 or len(photos) > 5:
-            error_message = 'You must upload 3-5 photos for each place.'
+            error_message = 'עליך להעלות בין 3 ל-5 תמונות בכל אזור.'
             return render_template('dashboard.html', user=user, supported_places=supported_places,
                                    can_create_review=can_create_review, error_message=error_message)
 
@@ -133,14 +150,21 @@ def dashboard():
             filename = secure_filename(photo.filename)
             file_path = os.path.join(save_directory, filename)
             photo.save(file_path)
+
+            if not validate_photo_in_place(file_path, user.address):
+                error_message = 'תמונה זו לא צולמה באזור העסק שלך, נסה שוב.'
+                return render_template('dashboard.html', user=user, supported_places=supported_places,
+                                       can_create_review=can_create_review, error_message=error_message)
+
             new_image = Image(filepath=file_path, user_id=user.id, place=place)
             db.session.add(new_image)
 
         user.query_and_update_place(place)
         db.session.commit()
+        message = "התמונות הועלו בהצלחה!"
 
     return render_template('dashboard.html', user=user, supported_places=supported_places,
-                           can_create_review=can_create_review)
+                           can_create_review=can_create_review, message=message)
 
 
 @app.route('/create_review', methods=['POST'])
@@ -186,9 +210,44 @@ def guest():
     return render_template('guest.html', users=users_with_places)
 
 
-@app.route('/business/<int:user_id>')
+@app.route('/business/<int:user_id>', methods=['GET', 'POST'])
 def business_details(user_id):
     user = User.query.get_or_404(user_id)
+    error_message, message = None, None
+
+    if request.method == 'POST':
+        place = request.form['place']
+        comment_text = request.form['comment_text']
+        image_file = request.files['comment_image']
+
+        if image_file:
+            image_data = image_file.read()
+        else:
+            image_data = None
+
+        if comment_text:
+            new_comment = Comment(user_id=user_id, place=place, comment_text=comment_text, image_data=image_data)
+            db.session.add(new_comment)
+
+            if image_file:
+                # Save the uploaded image, to validate its location
+                filename = secure_filename(image_file.filename)
+                img_path = os.path.join('comments_images', user.id, filename)
+                image_file.save(img_path)
+                if not validate_photo_in_place(img_path, user.address):
+                    error_message = 'תמונה זו לא צולמה באזור העסק שלך, נסה שוב.'
+                else:
+                    user.query_and_update_comment(place, new_comment)
+
+            if not error_message:
+                db.session.commit()
+                message = "התגובה נוספה בהצלחה!"
+
+        else:
+            error_message = "התגובה חייבת לכלול קטע טקסט."
+
+        return render_template('business_details.html', user=user, error_message=error_message, message=message)
+
     return render_template('business_details.html', user=user)
 
 
@@ -216,7 +275,6 @@ def add_test_user():
     user = User(username='testuser@gmail.com', password='password', name="בדיקה", address="בדיקה")
     db.session.add(user)
     db.session.commit()  # Commit changes to the database session
-    print("Test user added successfully.")
     return redirect(url_for('login'))  # Redirect to another route or return a response
 
 

@@ -1,6 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    .small-image {
+        width: 250px;  /* Adjust the size as needed */
+        height: auto;
+    }
+
+    .small-select {
+        width: 20%;  /* Adjust the width as needed */
+    }
+
+    .large-textarea {
+        width: 50%;  /* Make the textarea take full width */
+        height: 150px;  /* Adjust the height as needed */
+    }
+
+<!--    .comment-form {-->
+<!--        border: 1px solid #ddd;-->
+<!--        border-radius: 5px;-->
+<!--        padding: 15px;-->
+<!--        width: 100%; /* Make the form take the full width of the container */-->
+<!--        max-width: 600px; /* Set a max-width for the form */-->
+<!--    }-->
+</style>
+
 <div class="container">
     <div class="business-details-page">
         <div class="text-center mb-4">
@@ -16,7 +40,7 @@
                             <div class="row">
                                 {% for image in data.images %}
                                 <div class="col-6 mb-2">
-                                    <img src="data:image/jpeg;base64,{{ image }}" alt="Image" class="img-thumbnail">
+                                    <img src="data:image/jpeg;base64,{{ image }}" alt="Image" class="img-thumbnail small-image">
                                 </div>
                                 {% endfor %}
                             </div>
@@ -35,5 +59,67 @@
         </div>
         {% endif %}
     </div>
+
+       <!-- Comments Section -->
+    <div class="comments-section mt-4">
+
+        <!-- Display error message if it exists -->
+        {% if error_message %}
+        <div class="alert alert-danger text-center" role="alert">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        <!-- Display general message if it exists -->
+        {% if message %}
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <h3 style="padding-bottom: 8px;">תגובות משתמשים</h3>
+        {% for comment in user.comments %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ comment.place }}</h5>
+                <p class="card-text">{{ comment.comment_text }}</p>
+                {% if comment.image_data %}
+                <img src="data:image/jpeg;base64,{{ comment.image_data | b64encode }}" alt="Comment Image" class="img-thumbnail small-image">
+                {% endif %}
+                <p class="card-text"><small class="text-muted">נוצר בתאריך: {{ comment.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+
+                {% if comment.response %}
+                <p><strong>תגובת המערכת: </strong>{{ comment.response }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- Comment Form -->
+    <div class="comment-form mt-4 p-3">
+        <h3 style="padding-bottom: 2px;">הוסף תגובה</h3>
+        <form method="POST" enctype="multipart/form-data" class="small-form">
+            <div class="form-group">
+                <label for="place" class="mt-3">אזור בעסק:</label>
+                <select class="form-control form-control-sm small-select" id="place" name="place" required>
+                    {% for place in user.places %}
+                    <option value="{{ place }}">{{ place }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="comment_text">תגובה</label>
+                <textarea class="form-control large-textarea" id="comment_text" name="comment_text" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="comment_image">תמונה</label>
+                <input type="file" class="form-control-file" id="comment_image" name="comment_image">
+            </div>
+            <button type="submit" class="btn btn-primary">שלח תגובה</button>
+        </form>
+    </div>
+
 </div>
 {% endblock %}

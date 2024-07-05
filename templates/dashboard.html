@@ -10,8 +10,15 @@
 
                     <!-- Display error message if it exists -->
                     {% if error_message %}
-                    <div class="alert alert-danger" role="alert">
+                    <div class="alert alert-danger text-center" role="alert">
                         {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Display general message if it exists -->
+                    {% if message %}
+                    <div class="alert alert-success text-center" role="alert">
+                        {{ message }}
                     </div>
                     {% endif %}
 
