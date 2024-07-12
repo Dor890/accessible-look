@@ -1,5 +1,6 @@
 import os
 import base64
+import shutil
 
 from utils import encode_image
 from PIL import Image as PillImage
@@ -133,7 +134,6 @@ def dashboard():
     user = User.query.get(session['user'])
     can_create_review = user.can_create_review()
     message = None
-    supported_places_length = len(supported_places)
 
     if request.method == 'POST':
         place = request.form.get('place')
@@ -141,35 +141,35 @@ def dashboard():
             photos = request.files.getlist(f'photos_{place}')
             place_exists = request.form.get(f'place_exists_{place}', 'on') == 'on'
 
-        if place_exists:
-            if len(photos) < 3 or len(photos) > 5:
-                error_message = 'עליך להעלות בין 3 ל-5 תמונות בכל אזור.'
-                return render_template('dashboard.html', user=user, supported_places=supported_places,
-                                       can_create_review=can_create_review, error_message=error_message)
+            if place_exists:
+                if len(photos) < 3 or len(photos) > 5:
+                    error_message = 'עליך להעלות בין 3 ל-5 תמונות בכל אזור.'
+                    return render_template('dashboard.html', user=user, supported_places=supported_places,
+                                           can_create_review=can_create_review, error_message=error_message)
 
-        save_directory = os.path.join('saved_photos', str(user.id), place)
-        os.makedirs(save_directory, exist_ok=True)
+            else:
+                user.places[place] = {'images': [], 'result': 'המשתמש הצהיר כי המקום לא קיים בעסק.', 'summary': ''}
+                db.session.commit()
 
-        for photo in photos:
-            filename = secure_filename(photo.filename)
-            file_path = os.path.join(save_directory, filename)
-            photo.save(file_path)
+            save_directory = os.path.join('saved_photos', str(user.id), place)
+            os.makedirs(save_directory, exist_ok=True)
 
-            if not validate_photo_in_place(file_path, user.address):
-                error_message = 'תמונה זו לא צולמה באזור העסק שלך, נסה שוב.'
-                return render_template('dashboard.html', user=user, supported_places=supported_places,
-                                       can_create_review=can_create_review, error_message=error_message)
+            for photo in photos:
+                filename = secure_filename(photo.filename)
+                file_path = os.path.join(save_directory, filename)
+                photo.save(file_path)
 
-            new_image = Image(filepath=file_path, user_id=user.id, place=place)
-            db.session.add(new_image)
+                if not validate_photo_in_place(file_path, user.address):
+                    error_message = 'תמונה זו לא צולמה באזור העסק שלך, נסה שוב.'
+                    return render_template('dashboard.html', user=user, supported_places=supported_places,
+                                           can_create_review=can_create_review, error_message=error_message)
 
-        else:
-            user.places[place] = {'images': [], 'result': 'המשתמש הצהיר כי המקום לא קיים בעסק.', 'summary': ''}
+                new_image = Image(filepath=file_path, user_id=user.id, place=place)
+                db.session.add(new_image)
+
+            user.query_and_update_place(place)
             db.session.commit()
-
-        user.query_and_update_place(place)
-        db.session.commit()
-        message = "התמונות הועלו בהצלחה!"
+            message = "התמונות הועלו בהצלחה!"
 
     return render_template('dashboard.html', user=user, supported_places=supported_places,
                            can_create_review=can_create_review, message=message)
@@ -187,6 +187,7 @@ def update_place_status():
     if user and place:
         if place not in user.places:
             user.places[place] = {'images': [], 'result': '', 'summary': 'המשתמש הצהיר שהמקום לא קיים בעסק', 'exists': place_exists}
+            user.non_existing_places[place] = {'images': []}
         else:
             user.places[place]['exists'] = place_exists
         db.session.commit()
@@ -202,6 +203,12 @@ def reset_place():
     user = User.query.get(user_id)
     if user:
         user.reset_place(place)
+        # deleting saved photos for the current user and current place
+        directory = os.path.join('saved_photos', str(user.id), place)
+        shutil.rmtree(directory)
+        # delete the saved imaged on the database for the user and the place
+        db.session.query(Image).filter(Image.place == place and Image.user_id == user.id).delete()
+        db.session.commit()
         return jsonify({'message': 'Place reset successfully'}), 200
     return jsonify({'message': 'Error resetting place'}), 400
 

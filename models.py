@@ -27,6 +27,7 @@ class User(db.Model):
     address = db.Column(db.String(30))
     main_image = db.Column(db.String)
     places = db.Column(MutableDict.as_mutable(JSON), default={})
+    non_existing_places = db.Column(MutableDict.as_mutable(JSON), default={})
     pdf_report_path = db.Column(db.String, default='')
     final_result = db.Column(db.String, default='')
 
@@ -39,7 +40,7 @@ class User(db.Model):
 
     def produce_final_result(self):
         places_with_photos = [place for place in supported_places if place in self.places and self.places[place]['images']]
-        if len(places_with_photos) == len(supported_places):
+        if len(places_with_photos) == len(supported_places) - len(self.non_existing_places):
             results = {place: self.places[place]['result'] for place in places_with_photos}
             final_result = query_final_result(results)
             self.final_result = final_result
@@ -86,6 +87,7 @@ class User(db.Model):
     def query_and_update_place(self, place):
         if place in self.places and not self.places[place]['images']:
             self.places[place]['summary'] = 'המשתמש הצהיר כי המקום לא קיים בעסק.'
+
         else:
             base64_images, result = query_place(self, place)
             self.add_place(place, base64_images, result)
@@ -94,11 +96,16 @@ class User(db.Model):
     def reset_place(self, place):
         if place in self.places:
             del self.places[place]
+            if place in self.non_existing_places:
+                del self.non_existing_places[place]
+            if self.final_result:
+                self.final_result = ''
             db.session.commit()
 
     def can_create_review(self):
         places_uploaded = set(self.places.keys())
-        return set(supported_places).issubset(places_uploaded)
+        places_existing = set(supported_places) - set(self.non_existing_places.keys())
+        return places_existing.issubset(places_uploaded)
 
     def add_main_image(self, file_path):
         new_image = Image(filepath=file_path, user_id=self.id, place='main_image')
