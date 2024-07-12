@@ -1,13 +1,17 @@
-# TODO - Integrate it to the web-app
-
 import os
+import requests
+
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS
 from geopy.distance import geodesic
-import requests
 
 
 def get_exif_data(image_path):
+    """
+    Extracts and returns the EXIF data from an image file as a dictionary,
+    mapping EXIF tags to their respective values. If no EXIF data is found,
+    an empty dictionary is returned.
+    """
     image = Image.open(image_path)
     exif_data = image._getexif()
     if not exif_data:
@@ -17,6 +21,9 @@ def get_exif_data(image_path):
 
 
 def get_gps_info(exif_data):
+    """
+    Extracts GPS information from EXIF data.
+    """
     if 'GPSInfo' not in exif_data:
         return None
     gps_info = exif_data['GPSInfo']
@@ -28,6 +35,9 @@ def get_gps_info(exif_data):
 
 
 def convert_to_degrees(value):
+    """
+    Converts GPS coordinates from decimal degrees format to floating-point degrees.
+    """
     d = float(value[0])
     m = float(value[1]) / 60.0
     s = float(value[2]) / 3600.0
@@ -35,6 +45,9 @@ def convert_to_degrees(value):
 
 
 def get_lat_lon(gps_data):
+    """
+    Extracts latitude and longitude from GPS data. Returns a tuple of (latitude, longitude) or None if not found.
+    """
     lat = None
     lon = None
     if 'GPSLatitude' in gps_data and 'GPSLongitude' in gps_data:
@@ -48,6 +61,9 @@ def get_lat_lon(gps_data):
 
 
 def geocode_location_google(location_name):
+    """
+    Geocodes a location using Google Maps API. Returns a tuple of (latitude, longitude) or None if geocoding fails.
+    """
     api_key = os.getenv('GOOGLE_MAPS_API_KEY')
     if not api_key:
         raise ValueError("Google Maps API key not found. Set the environment variable GOOGLE_MAPS_API_KEY.")
@@ -72,11 +88,17 @@ def geocode_location_google(location_name):
 
 
 def is_within_margin(coord1, coord2, margin_km=10):
+    """
+    Checks if two coordinates are within a specified distance in kilometers. Returns True if within margin, False otherwise.
+    """
     distance = geodesic(coord1, coord2).kilometers
     return distance <= margin_km
 
 
 def validate_photo_in_place(image_path, business_location):
+    """
+    Validates if a photo was taken near a specified location. Returns True if likely taken at the location, False otherwise.
+    """
     exif_data = get_exif_data(image_path)
     gps_data = get_gps_info(exif_data)
     if gps_data:
