@@ -228,7 +228,7 @@ def create_review():
         # Redirect to a page where the final review is displayed
         return redirect(url_for('dashboard'))
     else:
-        flash('You need to upload images for all places before creating a review.', 'error')
+        flash('עליך להעלות את כל התמונות הדרושות על מנת ליצור ביקורת סופית.', 'error')
         return redirect(url_for('dashboard'))
 
 
@@ -239,13 +239,13 @@ def download_report():
 
     user = User.query.get(session['user'])
     if not user.final_result:
-        flash('Report not available. Please ensure all places have been reviewed.', 'error')
+        flash('הדוח אינו זמין, אנא וודא שכל התמונות הדרושות הועלו.', 'error')
         return redirect(url_for('dashboard'))
 
     try:
         return send_file(user.pdf_report_path, as_attachment=True, download_name='Accessibility_Report.pdf')
     except FileNotFoundError:
-        flash('Report file not found. Please try again later.', 'error')
+        flash('הדוח לא נמצא, אנא צור קשר עם המערכת.', 'error')
         return redirect(url_for('dashboard'))
 
 
