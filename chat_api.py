@@ -4,7 +4,7 @@ from openai import OpenAI
 from utils import get_queries_dict
 
 
-CHAT_ROLE = 'You are an assistant that should validate if places are accessible.'
+CHAT_ROLE = 'You are an expert in accessibility who should validate if places are accessible according to photos.'
 
 client = OpenAI()
 
