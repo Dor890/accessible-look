@@ -25,7 +25,7 @@ def query_place(user, place):
     query_func = get_model_methods()["place"]
     for query in queries:
         result = query_func(query, base64_images)
-        results[query] = result[0].text
+        results[query] = result[0].text if type(result) is list else result
 
     return base64_images, results
 

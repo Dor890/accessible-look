@@ -6,7 +6,7 @@ client = anthropic.Anthropic()  # ANTHROPIC_API_KEY
 MODEL = "claude-3-5-sonnet-20240620"
 SYSTEM = "You are an expert in accessibility who should validate if places are accessible according to photos."
 
-MAX_TOKENS = 1000
+MAX_TOKENS = 4096
 
 
 def ask_claude_place(query, images):
@@ -31,7 +31,7 @@ def ask_claude_final_result(combined_results):
     messages[0]["content"].append({"type": "text", "text": query})
     response = client.messages.create(max_tokens=MAX_TOKENS, model=MODEL, temperature=0, system=SYSTEM,
                                       messages=messages)
-    return response.content
+    return response.content[0].text
 
 
 def ask_claude_comment(place_result, comment_img, comment_text):
