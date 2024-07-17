@@ -275,11 +275,16 @@ def business_details(user_id):
             new_comment = Comment(user_id=user_id, place=place, comment_text=comment_text, image_data=image_data)
             db.session.add(new_comment)
 
+            save_directory = os.path.join('comments_images', str(user.id))
+            os.makedirs(save_directory, exist_ok=True)
+
             if image_file:
                 # Save the uploaded image, to validate its location
                 filename = secure_filename(image_file.filename)
-                img_path = os.path.join('comments_images', user.id, filename)
-                image_file.save(img_path)
+                img_path = os.path.join(save_directory, filename)
+                with open(img_path, 'wb') as f:
+                    f.write(image_data)
+
                 if not validate_photo_in_place(img_path, user.address):
                     error_message = 'תמונה זו לא צולמה באזור העסק שלך, נסה שוב.'
                 else:

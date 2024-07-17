@@ -116,7 +116,7 @@ class User(db.Model):
 
     def query_and_update_comment(self, place, comment):
         response = query_comment(self.places[place]['result'], comment.image_data, comment.comment_text)
-        comment.response = response
+        comment.response = response[0].text
         db.session.commit()
 
 

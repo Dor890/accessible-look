@@ -16,13 +16,34 @@
         height: 150px;  /* Adjust the height as needed */
     }
 
-<!--    .comment-form {-->
-<!--        border: 1px solid #ddd;-->
-<!--        border-radius: 5px;-->
-<!--        padding: 15px;-->
-<!--        width: 100%; /* Make the form take the full width of the container */-->
-<!--        max-width: 600px; /* Set a max-width for the form */-->
-<!--    }-->
+    /* Loading spinner styles */
+    .spinner {
+        display: none; /* Hide the spinner by default */
+        position: fixed;
+        z-index: 999;
+        top: 50%;
+        left: 50%;
+        margin-top: -50px;
+        margin-left: -50px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 100px;
+        height: 100px;
+        -webkit-animation: spin 2s linear infinite; /* Safari */
+        animation: spin 2s linear infinite;
+    }
+
+    /* Safari */
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 </style>
 
 <div class="container">
@@ -100,7 +121,7 @@
     <!-- Comment Form -->
     <div class="comment-form mt-4 p-3">
         <h3 style="padding-bottom: 2px;">הוסף תגובה</h3>
-        <form method="POST" enctype="multipart/form-data" class="small-form">
+        <form method="POST" enctype="multipart/form-data" class="small-form" id="commentForm">
             <div class="form-group">
                 <label for="place" class="mt-3">אזור בעסק:</label>
                 <select class="form-control form-control-sm small-select" id="place" name="place" required>
@@ -122,4 +143,17 @@
     </div>
 
 </div>
+
+<!-- Loading Spinner -->
+<div class="spinner" id="spinner"></div>
+
+<script>
+    document.getElementById('commentForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        document.getElementById('spinner').style.display = 'block'; // Show the spinner
+        setTimeout(() => {
+            event.target.submit(); // Submit the form after showing the spinner
+        }, 500); // Adjust the delay as needed
+    });
+</script>
 {% endblock %}

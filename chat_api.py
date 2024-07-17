@@ -1,16 +1,13 @@
-import base64
-
 from openai import OpenAI
 from utils import get_queries_dict
 
-
-CHAT_ROLE = 'You are an expert in accessibility who should validate if places are accessible according to photos.'
-
 client = OpenAI()
 
+MODEL = 'gpt-4o'
+CHAT_ROLE = 'You are an expert in accessibility who should validate if places are accessible according to photos.'
 
-def ask_chat_gpt_with_images(query, images):
-    model = 'gpt-4o'
+
+def ask_chat_gpt_place(query, images):
     system_config = {"role": "system", "content": CHAT_ROLE}
     user_config = {"role": "user", "content": []}
     user_content = [{"type": "text", "text": query}]
@@ -18,24 +15,11 @@ def ask_chat_gpt_with_images(query, images):
         user_content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image}"}})
     user_config["content"] = user_content
     messages = [system_config, user_config]
-    response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
-    return response.choices[0].message.content
-
-
-def ask_chat_gpt_generate_report(user_id, places):
-    model = 'gpt-4o'
-    system_config = {"role": "system", "content": CHAT_ROLE}
-    user_config = {"role": "user", "content": []}
-    query = f"Generate a detailed accessibility report for user {user_id} covering the following places: {', '.join(places)}."
-    user_content = [{"type": "text", "text": query}]
-    user_config["content"] = user_content
-    messages = [system_config, user_config]
-    response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
+    response = client.chat.completions.create(model=MODEL, messages=messages, temperature=0.0)
     return response.choices[0].message.content
 
 
 def ask_chat_gpt_final_result(combined_results):
-    model = 'gpt-4o'
     queries_dict = get_queries_dict()
     system_config = {"role": "system", "content": CHAT_ROLE}
     user_config = {"role": "user", "content": []}
@@ -43,12 +27,11 @@ def ask_chat_gpt_final_result(combined_results):
     user_content = [{"type": "text", "text": query}]
     user_config["content"] = user_content
     messages = [system_config, user_config]
-    response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
+    response = client.chat.completions.create(model=MODEL, messages=messages, temperature=0.0)
     return response.choices[0].message.content
 
 
 def ask_chat_gpt_comment(place_result, comment_img, comment_text):
-    model = 'gpt-4o'
     queries_dict = get_queries_dict()
     query = ''.join(queries_dict["comment"]).format(place_result, comment_text)
     system_config = {"role": "system", "content": CHAT_ROLE}
@@ -57,5 +40,5 @@ def ask_chat_gpt_comment(place_result, comment_img, comment_text):
     user_content.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{comment_img}"}})
     user_config["content"] = user_content
     messages = [system_config, user_config]
-    response = client.chat.completions.create(model=model, messages=messages, temperature=0.0)
+    response = client.chat.completions.create(model=MODEL, messages=messages, temperature=0.0)
     return response.choices[0].message.content

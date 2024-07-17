@@ -2,7 +2,8 @@ import base64
 
 from utils import encode_image
 from utils import get_queries_dict
-from chat_api import ask_chat_gpt_with_images, ask_chat_gpt_final_result, ask_chat_gpt_comment
+from chat_api import ask_chat_gpt_place, ask_chat_gpt_final_result, ask_chat_gpt_comment
+from claude_api import ask_claude_place, ask_claude_final_result, ask_claude_comment
 
 
 def query_place(user, place):
@@ -21,16 +22,18 @@ def query_place(user, place):
 
     # Get ChatGPT results for each query
     results = {}
+    query_func = get_model_methods()["place"]
     for query in queries:
-        result = ask_chat_gpt_with_images(query, base64_images)
-        results[query] = result
+        result = query_func(query, base64_images)
+        results[query] = result[0].text
 
     return base64_images, results
 
 
 def query_comment(place_result, comment_img, comment_text):
     comment_img_base64 = base64.b64encode(comment_img).decode('utf-8')
-    comment_response = ask_chat_gpt_comment(place_result, comment_img_base64, comment_text)
+    query_func = get_model_methods()["comment"]
+    comment_response = query_func(place_result, comment_img_base64, comment_text)
 
     return comment_response
 
@@ -39,7 +42,30 @@ def query_final_result(results):
     # Combine all results into a single data structure, filter out non-existing places
     combined_results = "; ".join([f"{place}: {result}" for place, result in results.items() if 'המשתמש הצהיר' not in result])
 
+    query_func = get_model_methods()["final_result"]
+
     # Send the combined results to the ask_chat_gpt_final_result function
-    final_result = ask_chat_gpt_final_result(combined_results)
+    final_result = query_func(combined_results)
 
     return final_result
+
+
+def get_model_methods(ai_tool="GPT"):
+    if ai_tool not in ["GPT", "CLAUDE"]:
+        # Set Chat-GPT as default AI tool
+        ai_tool = "GPT"
+
+    if ai_tool == "GPT":
+        methods = {
+            "place": ask_chat_gpt_place,
+            "final_result": ask_chat_gpt_final_result,
+            "comment": ask_chat_gpt_comment
+        }
+    elif ai_tool == "CLAUDE":
+        methods = {
+            "place": ask_claude_place,
+            "final_result": ask_claude_final_result,
+            "comment": ask_claude_comment
+        }
+
+    return methods
