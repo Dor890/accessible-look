@@ -50,7 +50,7 @@ def query_final_result(results):
     return final_result
 
 
-def get_model_methods(ai_tool="GPT"):
+def get_model_methods(ai_tool="CLAUDE"):
     if ai_tool not in ["GPT", "CLAUDE"]:
         # Set Chat-GPT as default AI tool
         ai_tool = "GPT"

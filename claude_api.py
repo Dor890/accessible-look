@@ -4,7 +4,8 @@ from utils import get_queries_dict
 client = anthropic.Anthropic()  # ANTHROPIC_API_KEY
 
 MODEL = "claude-3-5-sonnet-20240620"
-SYSTEM = "You are an expert in accessibility who should validate if places are accessible according to photos."
+SYSTEM = ("You are an expert in accessibility who should validate if places are "
+          "accessible for wheelchairs according to photos.")
 
 MAX_TOKENS = 4096
 
