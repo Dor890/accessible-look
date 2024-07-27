@@ -39,7 +39,8 @@ class User(db.Model):
         db.session.commit()
 
     def produce_final_result(self):
-        places_with_photos = [place for place in supported_places if place in self.places and self.places[place]['images']]
+        places_with_photos = [place for place in supported_places if
+                              place in self.places and self.places[place]['images']]
         if len(places_with_photos) == len(supported_places) - len(self.non_existing_places):
             results = {place: self.places[place]['result'] for place in places_with_photos}
             final_result = query_final_result(results)
@@ -69,14 +70,18 @@ class User(db.Model):
                     if place_name in self.places:
                         pdf.add_base64_images(self.places[place_name]['images'], place_name, width=50, height=50)
                 elif line.startswith("- **"):
-                    hebrew_text = line[4:].replace("**", "")
-                    pdf.write_hebrew(hebrew_text, 'Subtitle')
-                elif re.match(r"^\d+\. \*\*", line):
-                    hebrew_text = line.replace("**", "")
-                    pdf.write_hebrew(hebrew_text, 'Normal')
+                    if ":" in line:
+                        bold_part, regular_part = line[4:].split(":")
+                        bold_text = bold_part.replace("**", "") + ":"
+                        regular_text = regular_part.strip().replace("**", "")
+                        pdf.write_hebrew(bold_text, 'Subtitle')
+                        pdf.write_hebrew(regular_text, 'Body')
+                    else:
+                        hebrew_text = line[4:].replace("**", "")
+                        pdf.write_hebrew(hebrew_text, 'Subtitle')
                 else:
                     hebrew_text = line
-                    pdf.write_hebrew(hebrew_text, 'Normal')
+                    pdf.write_hebrew(hebrew_text, 'Body')
             pdf.output(report_file_path)
             self.pdf_report_path = report_file_path
             db.session.commit()
